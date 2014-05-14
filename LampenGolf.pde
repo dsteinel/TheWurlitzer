@@ -4,6 +4,7 @@ import ddf.minim.analysis.*;
 Minim minim;
 AudioInput in;
 FFT fft;
+/* =========== MINIM ============ */
 String note;// name of the note
 int n;//int value midi note
 color c;//color
@@ -16,12 +17,13 @@ int sampleRate= 44100;//sapleRate of 44100
 float [] max= new float [sampleRate/2];//array that contains the half of the sampleRate size, because FFT only reads the half of the sampleRate frequency. This array will be filled with amplitude values.
 float maximum;//the maximum amplitude of the max array
 float frequency;//the frequency in hertz
+/* ================================= */
 
 int holdFreq = 0;
 int theNote = 0;
 int noteHit = 0;
 int theHitNote = 1;
- 
+
 void setup()
 {
   size(460, 460);
@@ -58,14 +60,15 @@ void findNote() {
       frequency= i;
     }
   }
-  println(frequency);
- 
- 
+  
+  
+  println("frequency" + " " + frequency);
+  
   midi= 69+12*(log((frequency-6)/440));// formula that transform frequency to midi numbers
   n= int (midi);//cast to int
  
 //the octave have 12 tones and semitones. So, if we get a modulo of 12, we get the note names independently of the frequency  
-println(n);
+//println(n);
 drawNotes(n);
 }
 
@@ -242,7 +245,7 @@ public int drawNotes(float n){
 }
 
 void drawGrid(){
-  println(noteHit);
+  //println(noteHit);
   
   float x = 0;
   while (x<width) {
@@ -257,7 +260,7 @@ void drawGrid(){
   
   findNote(); //find note function
   if (theHitNote == noteHit){
-    println("NOW");
+    //println("NOW");
     for(int i = 0; i<480; i=i+60){
       c = color (255, 150, 0);
       fill(c);
