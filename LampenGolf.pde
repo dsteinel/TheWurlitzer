@@ -24,10 +24,15 @@ int theNote = 0;
 int noteHit = 0;
 int theHitNote = 1;
 
+int numReadings = 10;
+float [] readings = new float [numReadings];
+int index = 0;
+float total = 0;
+float average = 0;
+
 void setup()
 {
   size(460, 460);
- 
   minim = new Minim(this);
   minim.debugOn();
   in = minim.getLineIn(Minim.MONO, 4096, sampleRate);
@@ -36,7 +41,6 @@ void setup()
  
 void draw()
 {
- 
   background(0);//black BG
   drawGrid();
   textSize(20); //size of the text
@@ -46,9 +50,23 @@ void draw()
   fill(c);
   text ("note "+note, 120, 20);//display the note name
   popStyle();
+  /*if (frameCount% (60*0.5) == 0) {
+    findNote();
+    
+    total= total - readings[index];         
+    readings[index] = frequency; 
+    total= total + readings[index];       
+    index = index + 1;                    
+  
+    if (index >= numReadings) {            
+      index = 0;      
+    }      
+    average = total / numReadings; 
+    println(average);
+  }*/
 }
  
-void findNote() {
+float findNote() {
   fft.forward(in.left);
   for (int f=0;f<sampleRate/2;f++) { //analyses the amplitude of each frequency analysed, between 0 and 22050 hertz
     max[f]=fft.getFreq(float(f)); //each index is correspondent to a frequency and contains the amplitude value 
@@ -61,6 +79,16 @@ void findNote() {
     }
   }
   
+  total= total - readings[index];         
+  readings[index] = frequency; 
+  total= total + readings[index];       
+  index = index + 1;                    
+
+  if (index >= numReadings) {            
+    index = 0;      
+  }      
+  average = total / numReadings; 
+  println(average);
   
   println("frequency" + " " + frequency);
   
@@ -70,6 +98,8 @@ void findNote() {
 //the octave have 12 tones and semitones. So, if we get a modulo of 12, we get the note names independently of the frequency  
 //println(n);
 drawNotes(n);
+
+return frequency;
 }
 
 public int drawNotes(float n){
