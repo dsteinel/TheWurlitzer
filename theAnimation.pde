@@ -6,12 +6,12 @@ void animation(){
     arduino.digitalWrite(col[i], Arduino.HIGH);
     arduino.digitalWrite(row[i], Arduino.LOW);
   }
-  for(int y = 0; y<height; y += 60){
-    for(int x = 0; x<width; x += 60){
-      background(0);
-      rect(x, y, 40, 40);
-      rect(x, y, 40, 40);
-      delay(100);
-    }
-  }
+//  for(int y = 0; y<height; y += 60){
+//    for(int x = 0; x<width; x += 60){
+//      background(0);
+//      rect(x, y, 40, 40);
+//      rect(x, y, 40, 40);
+//      delay(100);
+//    }
+//  }
 }
