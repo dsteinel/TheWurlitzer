@@ -1,11 +1,16 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import ddf.minim.ugens.*;
+
 import processing.serial.*;
 import cc.arduino.*;
 
 Arduino arduino;
 Minim minim;
 AudioInput in;
+AudioOutput out;
+Oscil       wave;
+
 FFT fft;
 
 /* =========== MINIM ============ */
@@ -21,7 +26,7 @@ int sampleRate= 44100;
 
 float [] max= new float [sampleRate/2];//array that contains the half of the sampleRate size, because FFT only reads the half of the sampleRate frequency. This array will be filled with amplitude values.
 float maximum;//the maximum amplitude of the max array
-float frequency;//the frequency in hertz
+//float frequency;//the frequency in hertz
 /* ================================= */
 /**** ARDUINO STUFF ****/
 int col[] = {
@@ -78,16 +83,24 @@ float previousFrequency = 0;
 float currentFrequency = 0;
 int MEASUREFREQHOLD = 0;
 
+int displayTheHitNotes = 1;
 
 void setup()
 {
   size(460, 460);
   minim = new Minim(this);
+  arduino = new Arduino(this, Arduino.list()[3], 57600);
+  
   minim.debugOn();
   in = minim.getLineIn(Minim.STEREO, 4096, sampleRate);
+  out = minim.getLineOut();
+  
+  wave = new Oscil( 700, 1.5f, Waves.SINE );
+  wave.patch( out );
+  wave.setWaveform( Waves.SINE );
+  wave.setFrequency(0);
+  
   fft = new FFT(in.left.size(), sampleRate);
-  println(Arduino.list());
-  arduino = new Arduino(this, Arduino.list()[3], 57600);
 
   for (int i = 0; i < 8; i++) {
     arduino.pinMode(col[i], Arduino.OUTPUT);
@@ -95,28 +108,24 @@ void setup()
     arduino.digitalWrite(row[i], Arduino.HIGH);
     arduino.digitalWrite(col[i], Arduino.LOW);
   }
+
 }
 
 void draw()
 {
   currentMillis = millis();
-  background(0);
-  drawGrid();
-  textSize(20);
-  fill(0, 255, 255);
-  text (frequency-6+" hz", 10, 20);//display the frequency in hertz
-  fill(c);
+
+  //displayNotesToFind(noteToHit);
   
-  if (frameCount% (60*2) == 0) {
+  if (frameCount% (60*1) == 0) {
     calcFreq();
   }
-  displayNotesToFind(noteToHit);
-  //println(lastLedArr[0] + " " + lastLedArr[1]+ " " + lastLedArr[2] + " " + lastLedArr[3]);
- 
+
+
   if (noteToHit == currentSingingNote) {
     MEASUREFREQHOLD += 1;
     if(MEASUREFREQHOLD == 1)
-      previousMillis = currentMillis + 500;
+      previousMillis = currentMillis + 2500;
   }else if(noteToHit != currentSingingNote){
     MEASUREFREQHOLD = 0;
     previousMillis = 0;
@@ -124,9 +133,20 @@ void draw()
   if(MEASUREFREQHOLD >= 1){
     //println("currentMillis: " + currentMillis + "  |  " + "previousMillis: " + previousMillis);
     if (previousMillis - currentMillis < 0) {  
-      //animation();
+      animation();
+      println("NEXT NOTE TO HIT: " + noteToHit);
+      wave.setFrequency(0);
+      displayNotesToFind(noteToHit);
+      delay(5000);
+      resetFindLed();
+      resetSingingLed();
+      resetAllLed();
+      println("finished");
     }
   }
+  //println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
+  //println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
+
 }
 
 void drawGrid() {
@@ -141,10 +161,25 @@ void drawGrid() {
     x = x + 60;
   }
 }
+
 void stop()
 {
   in.close();
   minim.stop();
   super.stop();
+}
+
+void keyPressed() {
+  for (int i = 0; i < 8; i++) {
+    arduino.digitalWrite(row[i], Arduino.HIGH);
+    arduino.digitalWrite(col[i], Arduino.LOW);
+  }
+}
+
+void resetAllLed(){
+  for (int i = 0; i < 8; i++) {
+    arduino.digitalWrite(row[i], Arduino.HIGH);
+    arduino.digitalWrite(col[i], Arduino.LOW);
+  }
 }
 

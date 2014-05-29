@@ -1,20 +1,17 @@
 
-void resetLed() {
+void resetSingingLed() {
   arduino.digitalWrite(col[lastSingLedArr[0]], Arduino.LOW); // COL
   arduino.digitalWrite(col[lastSingLedArr[1]], Arduino.LOW); // COL
   arduino.digitalWrite(row[lastSingLedArr[2]], Arduino.HIGH);  // ROW
   arduino.digitalWrite(row[lastSingLedArr[3]], Arduino.HIGH);  // ROW
-  println(lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
+  wave.setFrequency( 0 );
 }
 
-public int displaySingingNotes() {
+public int displaySingingNotes(float frequency) {
   ///////// FIRST ROW
-  println("CALL");
-  arduino.digitalWrite(col[lastSingLedArr[0]], Arduino.LOW); // COL
-  arduino.digitalWrite(col[lastSingLedArr[1]], Arduino.LOW); // COL
-  arduino.digitalWrite(row[lastSingLedArr[2]], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(row[lastSingLedArr[3]], Arduino.HIGH);  // ROW
-  if (frequency > COMPAREFREQUENCY[1] && frequency <= COMPAREFREQUENCY[0])
+  resetSingingLed();
+
+  if (frequency > COMPAREFREQUENCY[1] && frequency <= COMPAREFREQUENCY[0] || frequency > COMPAREFREQUENCY[0])
   {
     currentSingingNote = 0;
     c = color (255, 0, 0);
@@ -129,7 +126,7 @@ public int displaySingingNotes() {
     lastSingLedArr[2] = 2;
     lastSingLedArr[3] = 3;
   }
-    if (frequency > COMPAREFREQUENCY[8] && frequency <= COMPAREFREQUENCY[7])
+  if (frequency > COMPAREFREQUENCY[8] && frequency <= COMPAREFREQUENCY[7])
   {
     currentSingingNote = 7;
     c = color (100, 0, 255);
@@ -261,7 +258,7 @@ public int displaySingingNotes() {
     lastSingLedArr[2] = 2;
     lastSingLedArr[3] = 3;
   }
-  if (frequency > COMPAREFREQUENCY[16] && frequency <= COMPAREFREQUENCY[15])
+  if (frequency > COMPAREFREQUENCY[16] && frequency <= COMPAREFREQUENCY[15] || frequency < COMPAREFREQUENCY[16])
   {
     currentSingingNote = 15;
     c = color (255, 255, 0);
@@ -282,7 +279,7 @@ public int displaySingingNotes() {
   arduino.digitalWrite(col[lastSingLedArr[1]], Arduino.HIGH); // COL
   arduino.digitalWrite(row[lastSingLedArr[2]], Arduino.LOW);  // ROW
   arduino.digitalWrite(row[lastSingLedArr[3]], Arduino.LOW);  // ROW
-
+  
   return currentSingingNote;
 }
 
