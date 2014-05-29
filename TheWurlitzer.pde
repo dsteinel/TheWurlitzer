@@ -37,7 +37,8 @@ int COMPAREFREQUENCY[] = {
 
 float freqTeiler = 7.5;
 int HIGHESFREQ = 720;
-int[] lastLedArr = new int[4];
+int[] lastSingLedArr = new int[4];
+int[] lastFindLedArr = new int[4];
 
 float ALLFREQS[] = {
   HIGHESFREQ-freqTeiler, HIGHESFREQ-freqTeiler*2, HIGHESFREQ-freqTeiler*3, HIGHESFREQ-freqTeiler*4, 
@@ -62,12 +63,13 @@ float ALLFREQS[] = {
 
 /**** OTHER VARS ****/
 int theNote = 0;
-int noteHit = 0;
-int theHitNote = 1;
+int currentSingingNote = 0;
+int previouscurrentSingingNote = 0;
+int noteToHit = 1;
 float previousMillis = 0;
 float currentMillis;
 
-int numReadings = 10;
+int numReadings = 2;
 float [] readings = new float [numReadings];
 int index = 0;
 float total = 0;
@@ -105,25 +107,24 @@ void draw()
   text (frequency-6+" hz", 10, 20);//display the frequency in hertz
   fill(c);
   
-  if (frameCount% (60*0.5) == 0) {
+  if (frameCount% (60*2) == 0) {
     calcFreq();
   }
-  displayNotesToFind(theHitNote);
-  displaySingingNotes();
+  displayNotesToFind(noteToHit);
   //println(lastLedArr[0] + " " + lastLedArr[1]+ " " + lastLedArr[2] + " " + lastLedArr[3]);
-
-  if (theHitNote == noteHit) {
+ 
+  if (noteToHit == currentSingingNote) {
     MEASUREFREQHOLD += 1;
     if(MEASUREFREQHOLD == 1)
       previousMillis = currentMillis + 500;
-  }else if(theHitNote != noteHit){
+  }else if(noteToHit != currentSingingNote){
     MEASUREFREQHOLD = 0;
     previousMillis = 0;
   }
   if(MEASUREFREQHOLD >= 1){
     //println("currentMillis: " + currentMillis + "  |  " + "previousMillis: " + previousMillis);
     if (previousMillis - currentMillis < 0) {  
-      animation();
+      //animation();
     }
   }
 }

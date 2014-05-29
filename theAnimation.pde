@@ -1,7 +1,7 @@
 void animation(){
   println("HELL YEAH");
-  theHitNote = (int)random(0,15);
-  println("NEW NOTE:" + " " + theHitNote);
+  noteToHit = (int)random(0,15);
+  println("NEW NOTE:" + " " + noteToHit);
   for(int i = 0; i<8; i++){
     arduino.digitalWrite(col[i], Arduino.HIGH);
     arduino.digitalWrite(row[i], Arduino.LOW);

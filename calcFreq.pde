@@ -18,11 +18,14 @@ float calcFreq() {
 
   if (index >= numReadings) {  
     average = total / numReadings; 
-    //println(average);    
     index = 0;
   }      
 
   midi= 69+14*(log((frequency-6)/440));// formula that transform frequency to midi numbers
   midiNote = int (midi);//cast to int
+  if(readings[0] != readings[1]){
+    displaySingingNotes();
+  }
+  //println("first: " + " " + readings[0] + "  " + readings[1]);
   return frequency;
 }
