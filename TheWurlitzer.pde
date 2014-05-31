@@ -29,11 +29,14 @@ float maximum;//the maximum amplitude of the max array
 //float frequency;//the frequency in hertz
 /* ================================= */
 /**** ARDUINO STUFF ****/
-int col[] = {
-  10, 11, 12, 13, 14, 15, 16, 17
-};
-int row[] = {
-  2, 3, 4, 5, 6, 7, 8, 9
+int LED[] = {
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+  11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 
+  31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 
+  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 
+  51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 
+  61, 62, 63, 64, 65
 };
 
 int COMPAREFREQUENCY[] = {
@@ -102,12 +105,10 @@ void setup()
   
   fft = new FFT(in.left.size(), sampleRate);
 
-  for (int i = 0; i < 8; i++) {
-    arduino.pinMode(col[i], Arduino.OUTPUT);
-    arduino.pinMode(row[i], Arduino.OUTPUT);
-    arduino.digitalWrite(row[i], Arduino.HIGH);
-    arduino.digitalWrite(col[i], Arduino.LOW);
-  }
+  for (int i = 0; i<65; i++) {
+    arduino.pinMode(LED[i], Arduino.OUTPUT);
+    arduino.digitalWrite(LED[i], Arduino.LOW);
+  } 
 
 }
 
@@ -170,16 +171,11 @@ void stop()
 }
 
 void keyPressed() {
-  for (int i = 0; i < 8; i++) {
-    arduino.digitalWrite(row[i], Arduino.HIGH);
-    arduino.digitalWrite(col[i], Arduino.LOW);
-  }
 }
 
 void resetAllLed(){
-  for (int i = 0; i < 8; i++) {
-    arduino.digitalWrite(row[i], Arduino.HIGH);
-    arduino.digitalWrite(col[i], Arduino.LOW);
+  for (int i = 0; i < 65; i++) {
+    arduino.digitalWrite(LED[i], Arduino.LOW);
   }
 }
 

@@ -39,13 +39,5 @@ float calcFreq() {
   fill(0, 255, 255);
   text (frequency-6+" hz", 10, 20);//display the frequency in hertz
   
-  // else{
-  //   resetSingingLed();
-  //   arduino.digitalWrite(col[lastSingLedArr[0]], Arduino.HIGH); // COL
-  //   arduino.digitalWrite(col[lastSingLedArr[1]], Arduino.HIGH); // COL
-  //   arduino.digitalWrite(row[lastSingLedArr[2]], Arduino.LOW);  // ROW
-  //   arduino.digitalWrite(row[lastSingLedArr[3]], Arduino.LOW);  // ROW
-  // }
-  //println("first: " + " " + readings[0] + "  " + readings[1]);
   return frequency;
 }
