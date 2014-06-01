@@ -52,7 +52,7 @@ float maximum;//the maximum amplitude of the max array
 /* ================================= */
 /**** ARDUINO STUFF ****/
 int LED[] = {
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+  2, 3, 4, 5, 6, 7, 8, 9, 10, 
   11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
   21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 
   31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 
@@ -62,7 +62,7 @@ int LED[] = {
 };
 
 int COMPAREFREQUENCY[] = {
-  720, 690, 660, 630, 600, 570, 540, 510, 480, 450, 420, 390, 360, 330, 300, 270, 240
+  240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720
 };
 
 float freqTeiler = 7.5f;
@@ -108,7 +108,7 @@ float previousFrequency = 0;
 float currentFrequency = 0;
 int MEASUREFREQHOLD = 0;
 
-int displayTheHitNotes = 1;
+int displayTheHitNotes = 0;
 
 public void setup()
 {
@@ -127,48 +127,63 @@ public void setup()
   
   fft = new FFT(in.left.size(), sampleRate);
 
-  for (int i = 0; i<65; i++) {
+  for (int i = 0; i<64; i++) {
     arduino.pinMode(LED[i], Arduino.OUTPUT);
     arduino.digitalWrite(LED[i], Arduino.LOW);
   } 
-
+  arduino.digitalWrite(18, Arduino.HIGH);
+  arduino.digitalWrite(19, Arduino.HIGH);
+  arduino.digitalWrite(26, Arduino.HIGH);
+  arduino.digitalWrite(27, Arduino.HIGH);
 }
 
 public void draw()
 {
   currentMillis = millis();
 
-  //displayNotesToFind(noteToHit);
-  
-  if (frameCount% (60*1) == 0) {
-    calcFreq();
+
+  displayNotesToFind(noteToHit);
+  noteToHit++;
+  if (noteToHit >= 15) {
+    noteToHit = 0;
   }
+  delay(1000);  
+  /* TEST LEDS */
+// for (int i = 0; i<64; i++) {
+//   arduino.digitalWrite(LED[i], Arduino.HIGH);
+//   delay(100);
+//   arduino.digitalWrite(LED[i], Arduino.LOW);
+// }
+
+  // if (frameCount% (60*1) == 0) {
+  //   calcFreq();
+  // }
 
 
-  if (noteToHit == currentSingingNote) {
-    MEASUREFREQHOLD += 1;
-    if(MEASUREFREQHOLD == 1)
-      previousMillis = currentMillis + 2500;
-  }else if(noteToHit != currentSingingNote){
-    MEASUREFREQHOLD = 0;
-    previousMillis = 0;
-  }
-  if(MEASUREFREQHOLD >= 1){
-    //println("currentMillis: " + currentMillis + "  |  " + "previousMillis: " + previousMillis);
-    if (previousMillis - currentMillis < 0) {  
-      animation();
-      println("NEXT NOTE TO HIT: " + noteToHit);
-      wave.setFrequency(0);
-      displayNotesToFind(noteToHit);
-      delay(5000);
-      resetFindLed();
-      resetSingingLed();
-      resetAllLed();
-      println("finished");
-    }
-  }
-  //println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
-  //println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
+  // if (noteToHit == currentSingingNote) {
+  //   MEASUREFREQHOLD += 1;
+  //   if(MEASUREFREQHOLD == 1)
+  //     previousMillis = currentMillis + 2500;
+  // }else if(noteToHit != currentSingingNote){
+  //   MEASUREFREQHOLD = 0;
+  //   previousMillis = 0;
+  // }
+  // if(MEASUREFREQHOLD >= 1){
+  //   //println("currentMillis: " + currentMillis + "  |  " + "previousMillis: " + previousMillis);
+  //   if (previousMillis - currentMillis < 0) {  
+  //     animation();
+  //     println("NEXT NOTE TO HIT: " + noteToHit);
+  //     wave.setFrequency(0);
+  //     displayNotesToFind(noteToHit);
+  //     delay(5000);
+  //     resetFindLed();
+  //     resetSingingLed();
+  //     resetAllLed();
+  //     println("finished");
+  //   }
+  // }
+  // println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
+  // println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
 
 }
 
@@ -196,7 +211,7 @@ public void keyPressed() {
 }
 
 public void resetAllLed(){
-  for (int i = 0; i < 65; i++) {
+  for (int i = 0; i < 64; i++) {
     arduino.digitalWrite(LED[i], Arduino.LOW);
   }
 }
@@ -245,17 +260,17 @@ public float calcFreq() {
   return frequency;
 }
 public void resetFindLed(){
-  arduino.digitalWrite(LED[lastFindLedArr[0]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[1]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[2]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[3]], Arduino.LOW);
-  println("RESET");
+    arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
+    println("RESET");
 }
 
 public void displayNotesToFind(int whichNote) {
 ///////// FOURTH ROW
-  resetFindLed();
-  resetAllLed();
+resetFindLed();
+resetAllLed();
   //println(whichNote);
   println("CALL");
 
@@ -268,10 +283,10 @@ public void displayNotesToFind(int whichNote) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 0;
-    lastFindLedArr[1] = 1;
-    lastFindLedArr[2] = 2;
-    lastFindLedArr[3] = 3;
+    lastFindLedArr[0] = 2;
+    lastFindLedArr[1] = 3;
+    lastFindLedArr[2] = 10;
+    lastFindLedArr[3] = 11;
 }
 if (whichNote == 1) {
     c = color (100, 100, 255);
@@ -282,10 +297,10 @@ if (whichNote == 1) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 4;
-    lastFindLedArr[1] = 5;
-    lastFindLedArr[2] = 6;
-    lastFindLedArr[3] = 7;
+    lastFindLedArr[0] = 18;
+    lastFindLedArr[1] = 19;
+    lastFindLedArr[2] = 26;
+    lastFindLedArr[3] = 27;
 }
 if (whichNote == 2) {
     c = color (100, 150, 255);
@@ -296,10 +311,10 @@ if (whichNote == 2) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 8;
-    lastFindLedArr[1] = 9;
-    lastFindLedArr[2] = 10;
-    lastFindLedArr[3] = 11;
+    lastFindLedArr[0] = 34;
+    lastFindLedArr[1] = 35;
+    lastFindLedArr[2] = 42;
+    lastFindLedArr[3] = 43;
 }
 if (whichNote == 3) {
     c = color (100, 200, 255);
@@ -310,10 +325,10 @@ if (whichNote == 3) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 12;
-    lastFindLedArr[1] = 13;
-    lastFindLedArr[2] = 14;
-    lastFindLedArr[3] = 15;
+    lastFindLedArr[0] = 50;
+    lastFindLedArr[1] = 51;
+    lastFindLedArr[2] = 58;
+    lastFindLedArr[3] = 59;
 }
 
 ///////// THIRD ROW
@@ -326,10 +341,10 @@ if (whichNote == 4) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 16;
-    lastFindLedArr[1] = 17;
-    lastFindLedArr[2] = 18;
-    lastFindLedArr[3] = 19;
+    lastFindLedArr[0] = 4;
+    lastFindLedArr[1] = 5;
+    lastFindLedArr[2] = 12;
+    lastFindLedArr[3] = 13;
 }
 if (whichNote == 5) {
     c = color (255, 200, 0);
@@ -342,8 +357,8 @@ if (whichNote == 5) {
     rect(drawX, 180, 40, 40);
     lastFindLedArr[0] = 20;
     lastFindLedArr[1] = 21;
-    lastFindLedArr[2] = 22;
-    lastFindLedArr[3] = 23;
+    lastFindLedArr[2] = 28;
+    lastFindLedArr[3] = 29;
 }
 if (whichNote == 6) {
     c = color (255, 130, 0);
@@ -354,10 +369,10 @@ if (whichNote == 6) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 24;
-    lastFindLedArr[1] = 25;
-    lastFindLedArr[2] = 26;
-    lastFindLedArr[3] = 27;
+    lastFindLedArr[0] = 36;
+    lastFindLedArr[1] = 37;
+    lastFindLedArr[2] = 44;
+    lastFindLedArr[3] = 45;
 }
 if (whichNote == 7) {
     c = color (255, 90, 0);
@@ -368,10 +383,10 @@ if (whichNote == 7) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 28;
-    lastFindLedArr[1] = 29;
-    lastFindLedArr[2] = 30;
-    lastFindLedArr[3] = 31;
+    lastFindLedArr[0] = 52;
+    lastFindLedArr[1] = 53;
+    lastFindLedArr[2] = 60;
+    lastFindLedArr[3] = 61;
 }
 
    ///////// SECOND ROW
@@ -385,10 +400,10 @@ if (whichNote == 7) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 32;
-    lastFindLedArr[1] = 33;
-    lastFindLedArr[2] = 34;
-    lastFindLedArr[3] = 35;
+    lastFindLedArr[0] = 6;
+    lastFindLedArr[1] = 7;
+    lastFindLedArr[2] = 14;
+    lastFindLedArr[3] = 15;
 }
 if (whichNote == 9) {
     c = color (255, 0, 190);
@@ -399,10 +414,10 @@ if (whichNote == 9) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 36;
-    lastFindLedArr[1] = 37;
-    lastFindLedArr[2] = 38;
-    lastFindLedArr[3] = 39;
+    lastFindLedArr[0] = 22;
+    lastFindLedArr[1] = 23;
+    lastFindLedArr[2] = 30;
+    lastFindLedArr[3] = 31;
 }
 if (whichNote == 10) {
     c = color (255, 0, 140);
@@ -413,10 +428,10 @@ if (whichNote == 10) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 40;
-    lastFindLedArr[1] = 41;
-    lastFindLedArr[2] = 42;
-    lastFindLedArr[3] = 43;
+    lastFindLedArr[0] = 38;
+    lastFindLedArr[1] = 39;
+    lastFindLedArr[2] = 46;
+    lastFindLedArr[3] = 47;
 }
 if (whichNote == 11) {
     c = color (255, 0, 90);
@@ -427,10 +442,10 @@ if (whichNote == 11) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 44;
-    lastFindLedArr[1] = 45;
-    lastFindLedArr[2] = 46;
-    lastFindLedArr[3] = 47;
+    lastFindLedArr[0] = 54;
+    lastFindLedArr[1] = 55;
+    lastFindLedArr[2] = 62;
+    lastFindLedArr[3] = 63;
 }
 
    ///////// FIRST ROW
@@ -444,10 +459,10 @@ if (whichNote == 11) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 48;
-    lastFindLedArr[1] = 49;
-    lastFindLedArr[2] = 50;
-    lastFindLedArr[3] = 51;
+    lastFindLedArr[0] = 8;
+    lastFindLedArr[1] = 9;
+    lastFindLedArr[2] = 16;
+    lastFindLedArr[3] = 17;
 }
 if (whichNote == 13) {
     c = color (255, 150, 0);
@@ -458,10 +473,10 @@ if (whichNote == 13) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 52;
-    lastFindLedArr[1] = 53;
-    lastFindLedArr[2] = 54;
-    lastFindLedArr[3] = 55;
+    lastFindLedArr[0] = 24;
+    lastFindLedArr[1] = 25;
+    lastFindLedArr[2] = 32;
+    lastFindLedArr[3] = 33;
 }
 if (whichNote == 14) {
     c = color (255, 20, 0);
@@ -472,10 +487,10 @@ if (whichNote == 14) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 56;
-    lastFindLedArr[1] = 57;
-    lastFindLedArr[2] = 58;
-    lastFindLedArr[3] = 59;
+    lastFindLedArr[0] = 40;
+    lastFindLedArr[1] = 41;
+    lastFindLedArr[2] = 48;
+    lastFindLedArr[3] = 49;
 }
 if (whichNote == 15) {
     c = color (255, 100, 0);
@@ -486,12 +501,15 @@ if (whichNote == 15) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 60;
-    lastFindLedArr[1] = 61;
-    lastFindLedArr[2] = 62;
-    lastFindLedArr[3] = 63;
+    lastFindLedArr[0] = 56;
+    lastFindLedArr[1] = 57;
+    lastFindLedArr[2] = 64;
+    lastFindLedArr[3] = 65;
 }
+
     
+
+  
   arduino.digitalWrite(LED[lastFindLedArr[0]], Arduino.HIGH); // COL
   arduino.digitalWrite(LED[lastFindLedArr[1]], Arduino.HIGH); // COL
   arduino.digitalWrite(LED[lastFindLedArr[2]], Arduino.HIGH);  // ROW
@@ -502,10 +520,10 @@ if (whichNote == 15) {
 
 
 public void resetSingingLed() {
-  arduino.digitalWrite(LED[lastSingLedArr[0]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastSingLedArr[1]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastSingLedArr[2]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastSingLedArr[3]], Arduino.LOW);
+  arduino.digitalWrite(lastSingLedArr[0], Arduino.LOW);
+  arduino.digitalWrite(lastSingLedArr[1], Arduino.LOW);
+  arduino.digitalWrite(lastSingLedArr[2], Arduino.LOW);
+  arduino.digitalWrite(lastSingLedArr[3], Arduino.LOW);
   wave.setFrequency( 0 );
 }
 
@@ -513,7 +531,7 @@ public int displaySingingNotes(float frequency) {
   ///////// FIRST ROW
   resetSingingLed();
 
-  if (frequency > COMPAREFREQUENCY[1] && frequency <= COMPAREFREQUENCY[0] || frequency > COMPAREFREQUENCY[0])
+  if (frequency >= COMPAREFREQUENCY[0] && frequency < COMPAREFREQUENCY[1] || frequency > COMPAREFREQUENCY[0])
   {
     currentSingingNote = 0;
     c = color (255, 0, 0);
@@ -524,12 +542,12 @@ public int displaySingingNotes(float frequency) {
     rect(0, drawX, 40, 40);
     rect(drawX, 0, 40, 40);
     rect(drawX, drawX, 40, 40);
-    lastSingLedArr[0] = 64;
-    lastSingLedArr[1] = 63;
-    lastSingLedArr[2] = 56;
-    lastSingLedArr[3] = 55;
+    lastSingLedArr[0] = 2;
+    lastSingLedArr[1] = 3;
+    lastSingLedArr[2] = 10;
+    lastSingLedArr[3] = 11;
   } 
-  if (frequency > COMPAREFREQUENCY[2] && frequency <= COMPAREFREQUENCY[1])
+  if ( frequency >= COMPAREFREQUENCY[1] && frequency < COMPAREFREQUENCY[2])
   {
     currentSingingNote = 1;
     c = color (255, 0, 0);
@@ -540,12 +558,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastSingLedArr[0] = 62;
-    lastSingLedArr[1] = 61;
-    lastSingLedArr[2] = 54;
-    lastSingLedArr[3] = 53;
+    lastSingLedArr[0] = 18;
+    lastSingLedArr[1] = 19;
+    lastSingLedArr[2] = 26;
+    lastSingLedArr[3] = 27;
   } 
-  if (frequency > COMPAREFREQUENCY[3] && frequency <= COMPAREFREQUENCY[2])
+  if (frequency >= COMPAREFREQUENCY[2] && frequency < COMPAREFREQUENCY[3])
   {
     currentSingingNote = 2;
     c = color (255, 0, 0);
@@ -556,13 +574,13 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastSingLedArr[0] = 60;
-    lastSingLedArr[1] = 59;
-    lastSingLedArr[2] = 52;
-    lastSingLedArr[3] = 51;
+    lastSingLedArr[0] = 34;
+    lastSingLedArr[1] = 35;
+    lastSingLedArr[2] = 42;
+    lastSingLedArr[3] = 43;
   } 
 
-  if (frequency > COMPAREFREQUENCY[4] && frequency <= COMPAREFREQUENCY[3])
+  if (frequency >= COMPAREFREQUENCY[3] && frequency < COMPAREFREQUENCY[4])
   {
     currentSingingNote = 3;
     c = color (255, 0, 0);
@@ -573,14 +591,14 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastSingLedArr[0] = 58;
-    lastSingLedArr[1] = 57;
-    lastSingLedArr[2] = 48;
-    lastSingLedArr[3] = 49;
+    lastSingLedArr[0] = 50;
+    lastSingLedArr[1] = 51;
+    lastSingLedArr[2] = 58;
+    lastSingLedArr[3] = 59;
   }
 
   ///////// THIRD ROW
-  if (frequency > COMPAREFREQUENCY[5] && frequency <= COMPAREFREQUENCY[4])
+  if (frequency >= COMPAREFREQUENCY[4] && frequency < COMPAREFREQUENCY[5])
   {
     currentSingingNote = 4;
     c = color (255, 0, 80);
@@ -591,12 +609,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 56;
-    lastSingLedArr[1] = 55;
-    lastSingLedArr[2] = 47;
-    lastSingLedArr[3] = 46;
+    lastSingLedArr[0] = 4;
+    lastSingLedArr[1] = 5;
+    lastSingLedArr[2] = 12;
+    lastSingLedArr[3] = 13;
   }
-  if (frequency > COMPAREFREQUENCY[6] && frequency <= COMPAREFREQUENCY[5])
+  if (frequency >= COMPAREFREQUENCY[5] && frequency < COMPAREFREQUENCY[6])
   {
     currentSingingNote = 5;
     c = color (255, 0, 150);
@@ -607,12 +625,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 54;
-    lastSingLedArr[1] = 53;
-    lastSingLedArr[2] = 45;
-    lastSingLedArr[3] = 44;
+    lastSingLedArr[0] = 20;
+    lastSingLedArr[1] = 21;
+    lastSingLedArr[2] = 28;
+    lastSingLedArr[3] = 29;
   }
-  if (frequency > COMPAREFREQUENCY[7] && frequency <= COMPAREFREQUENCY[6])
+  if (frequency >= COMPAREFREQUENCY[6] && frequency < COMPAREFREQUENCY[7])
   {
     currentSingingNote = 6;
     c = color (200, 0, 255);
@@ -623,12 +641,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 52;
-    lastSingLedArr[1] = 51;
-    lastSingLedArr[2] = 43;
-    lastSingLedArr[3] = 42;
+    lastSingLedArr[0] = 36;
+    lastSingLedArr[1] = 37;
+    lastSingLedArr[2] = 44;
+    lastSingLedArr[3] = 45;
   }
-  if (frequency > COMPAREFREQUENCY[8] && frequency <= COMPAREFREQUENCY[7])
+  if (frequency >= COMPAREFREQUENCY[7] && frequency < COMPAREFREQUENCY[8])
   {
     currentSingingNote = 7;
     c = color (100, 0, 255);
@@ -639,14 +657,14 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 50;
-    lastSingLedArr[1] = 49;
-    lastSingLedArr[2] = 41;
-    lastSingLedArr[3] = 40;
+    lastSingLedArr[0] = 52;
+    lastSingLedArr[1] = 53;
+    lastSingLedArr[2] = 60;
+    lastSingLedArr[3] = 61;
   }
 
   ///////// SECOND ROW
-  if (frequency > COMPAREFREQUENCY[9] && frequency <= COMPAREFREQUENCY[8])
+  if (frequency >= COMPAREFREQUENCY[8] && frequency < COMPAREFREQUENCY[9])
   {
     currentSingingNote = 8;
     c = color (0, 0, 255);
@@ -657,12 +675,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastSingLedArr[0] = 48;
-    lastSingLedArr[1] = 47;
-    lastSingLedArr[2] = 39;
-    lastSingLedArr[3] = 38;
+    lastSingLedArr[0] = 6;
+    lastSingLedArr[1] = 7;
+    lastSingLedArr[2] = 14;
+    lastSingLedArr[3] = 15;
   }
-  if (frequency > COMPAREFREQUENCY[10] && frequency <= COMPAREFREQUENCY[9])
+  if (frequency >= COMPAREFREQUENCY[9] && frequency < COMPAREFREQUENCY[10])
   {
     currentSingingNote = 9;
     c = color (0, 50, 255);
@@ -673,12 +691,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastSingLedArr[0] = 46;
-    lastSingLedArr[1] = 45;
-    lastSingLedArr[2] = 37;
-    lastSingLedArr[3] = 36;
+    lastSingLedArr[0] = 22;
+    lastSingLedArr[1] = 23;
+    lastSingLedArr[2] = 30;
+    lastSingLedArr[3] = 31;
   }
-  if (frequency > COMPAREFREQUENCY[11] && frequency <= COMPAREFREQUENCY[10])
+  if (frequency >= COMPAREFREQUENCY[10] && frequency < COMPAREFREQUENCY[11])
   {
     currentSingingNote = 10;
     c = color (0, 150, 255);
@@ -689,12 +707,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastSingLedArr[0] = 44;
-    lastSingLedArr[1] = 43;
-    lastSingLedArr[2] = 35;
-    lastSingLedArr[3] = 34;
+    lastSingLedArr[0] = 38;
+    lastSingLedArr[1] = 39;
+    lastSingLedArr[2] = 46;
+    lastSingLedArr[3] = 47;
   }
-  if (frequency > COMPAREFREQUENCY[12] && frequency <= COMPAREFREQUENCY[11])
+  if (frequency >= COMPAREFREQUENCY[11] && frequency < COMPAREFREQUENCY[12])
   {
     currentSingingNote = 11;
     c = color (0, 255, 255);
@@ -705,14 +723,14 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastSingLedArr[0] = 42;
-    lastSingLedArr[1] = 41;
-    lastSingLedArr[2] = 33;
-    lastSingLedArr[3] = 32;
+    lastSingLedArr[0] = 54;
+    lastSingLedArr[1] = 55;
+    lastSingLedArr[2] = 62;
+    lastSingLedArr[3] = 63;
   }
 
   ///////// FIRST ROW
-  if (frequency > COMPAREFREQUENCY[13] && frequency <= COMPAREFREQUENCY[12])
+  if (frequency >= COMPAREFREQUENCY[12] && frequency < COMPAREFREQUENCY[13])
   {
     currentSingingNote = 12;
     c = color (0, 255, 0);
@@ -723,12 +741,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastSingLedArr[0] = 40;
-    lastSingLedArr[1] = 39;
-    lastSingLedArr[2] = 31;
-    lastSingLedArr[3] = 30;
+    lastSingLedArr[0] = 8;
+    lastSingLedArr[1] = 9;
+    lastSingLedArr[2] = 16;
+    lastSingLedArr[3] = 17;
   }
-  if (frequency > COMPAREFREQUENCY[14] && frequency <= COMPAREFREQUENCY[13])
+  if (frequency >= COMPAREFREQUENCY[13] && frequency < COMPAREFREQUENCY[14])
   {
     currentSingingNote = 13;
     c = color (255, 255, 0);
@@ -739,12 +757,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastSingLedArr[0] = 38;
-    lastSingLedArr[1] = 37;
-    lastSingLedArr[2] = 29;
-    lastSingLedArr[3] = 28;
+    lastSingLedArr[0] = 24;
+    lastSingLedArr[1] = 25;
+    lastSingLedArr[2] = 32;
+    lastSingLedArr[3] = 33;
   }
-  if (frequency > COMPAREFREQUENCY[15] && frequency <= COMPAREFREQUENCY[14])
+  if (frequency >= COMPAREFREQUENCY[14] && frequency < COMPAREFREQUENCY[15])
   {
     currentSingingNote = 14;
     c = color (255, 255, 0);
@@ -755,12 +773,12 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastSingLedArr[0] = 36;
-    lastSingLedArr[1] = 35;
-    lastSingLedArr[2] = 27;
-    lastSingLedArr[3] = 26;
+    lastSingLedArr[0] = 40;
+    lastSingLedArr[1] = 41;
+    lastSingLedArr[2] = 48;
+    lastSingLedArr[3] = 49;
   }
-  if (frequency > COMPAREFREQUENCY[16] && frequency <= COMPAREFREQUENCY[15] || frequency < COMPAREFREQUENCY[16])
+  if (frequency >= COMPAREFREQUENCY[15] && frequency < COMPAREFREQUENCY[16] || frequency < COMPAREFREQUENCY[16])
   {
     currentSingingNote = 15;
     c = color (255, 255, 0);
@@ -771,16 +789,16 @@ public int displaySingingNotes(float frequency) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastSingLedArr[0] = 34;
-    lastSingLedArr[1] = 33;
-    lastSingLedArr[2] = 25;
-    lastSingLedArr[3] = 24;
+    lastSingLedArr[0] = 56;
+    lastSingLedArr[1] = 57;
+    lastSingLedArr[2] = 64;
+    lastSingLedArr[3] = 64;
   } 
 
-  arduino.digitalWrite(LED[lastSingLedArr[0]], Arduino.HIGH); // COL
-  arduino.digitalWrite(LED[lastSingLedArr[1]], Arduino.HIGH); // COL
-  arduino.digitalWrite(LED[lastSingLedArr[2]], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(LED[lastSingLedArr[3]], Arduino.HIGH);  // ROW
+  arduino.digitalWrite(lastSingLedArr[0], Arduino.HIGH); // COL
+  arduino.digitalWrite(lastSingLedArr[1], Arduino.HIGH); // COL
+  arduino.digitalWrite(lastSingLedArr[2], Arduino.HIGH);  // ROW
+  arduino.digitalWrite(lastSingLedArr[3], Arduino.HIGH);  // ROW
   
   return currentSingingNote;
 }
@@ -790,7 +808,7 @@ public void animation(){
   noteToHit = (int)random(0,15);
   
   println("NEW NOTE:" + " " + noteToHit);
-  for (int i = 0; i < 64; i++) {
+  for (int i = 0; i <= 64; i++) {
     arduino.digitalWrite(LED[i], Arduino.HIGH);
   }
 

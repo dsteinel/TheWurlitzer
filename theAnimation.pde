@@ -3,7 +3,7 @@ void animation(){
   noteToHit = (int)random(0,15);
   
   println("NEW NOTE:" + " " + noteToHit);
-  for (int i = 0; i < 64; i++) {
+  for (int i = 0; i <= 64; i++) {
     arduino.digitalWrite(LED[i], Arduino.HIGH);
   }
 

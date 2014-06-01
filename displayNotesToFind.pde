@@ -1,15 +1,15 @@
 void resetFindLed(){
-  arduino.digitalWrite(LED[lastFindLedArr[0]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[1]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[2]], Arduino.LOW);
-  arduino.digitalWrite(LED[lastFindLedArr[3]], Arduino.LOW);
-  println("RESET");
+    arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW);
+    arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
+    println("RESET");
 }
 
 void displayNotesToFind(int whichNote) {
 ///////// FOURTH ROW
-  resetFindLed();
-  resetAllLed();
+resetFindLed();
+resetAllLed();
   //println(whichNote);
   println("CALL");
 
@@ -22,10 +22,10 @@ void displayNotesToFind(int whichNote) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 0;
-    lastFindLedArr[1] = 1;
-    lastFindLedArr[2] = 2;
-    lastFindLedArr[3] = 3;
+    lastFindLedArr[0] = 2;
+    lastFindLedArr[1] = 3;
+    lastFindLedArr[2] = 10;
+    lastFindLedArr[3] = 11;
 }
 if (whichNote == 1) {
     c = color (100, 100, 255);
@@ -36,10 +36,10 @@ if (whichNote == 1) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 4;
-    lastFindLedArr[1] = 5;
-    lastFindLedArr[2] = 6;
-    lastFindLedArr[3] = 7;
+    lastFindLedArr[0] = 18;
+    lastFindLedArr[1] = 19;
+    lastFindLedArr[2] = 26;
+    lastFindLedArr[3] = 27;
 }
 if (whichNote == 2) {
     c = color (100, 150, 255);
@@ -50,10 +50,10 @@ if (whichNote == 2) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 8;
-    lastFindLedArr[1] = 9;
-    lastFindLedArr[2] = 10;
-    lastFindLedArr[3] = 11;
+    lastFindLedArr[0] = 34;
+    lastFindLedArr[1] = 35;
+    lastFindLedArr[2] = 42;
+    lastFindLedArr[3] = 43;
 }
 if (whichNote == 3) {
     c = color (100, 200, 255);
@@ -64,10 +64,10 @@ if (whichNote == 3) {
     drawX=drawX+60;
     rect(drawX, 0, 40, 40);
     rect(drawX, 60, 40, 40);
-    lastFindLedArr[0] = 12;
-    lastFindLedArr[1] = 13;
-    lastFindLedArr[2] = 14;
-    lastFindLedArr[3] = 15;
+    lastFindLedArr[0] = 50;
+    lastFindLedArr[1] = 51;
+    lastFindLedArr[2] = 58;
+    lastFindLedArr[3] = 59;
 }
 
 ///////// THIRD ROW
@@ -80,10 +80,10 @@ if (whichNote == 4) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 16;
-    lastFindLedArr[1] = 17;
-    lastFindLedArr[2] = 18;
-    lastFindLedArr[3] = 19;
+    lastFindLedArr[0] = 4;
+    lastFindLedArr[1] = 5;
+    lastFindLedArr[2] = 12;
+    lastFindLedArr[3] = 13;
 }
 if (whichNote == 5) {
     c = color (255, 200, 0);
@@ -96,8 +96,8 @@ if (whichNote == 5) {
     rect(drawX, 180, 40, 40);
     lastFindLedArr[0] = 20;
     lastFindLedArr[1] = 21;
-    lastFindLedArr[2] = 22;
-    lastFindLedArr[3] = 23;
+    lastFindLedArr[2] = 28;
+    lastFindLedArr[3] = 29;
 }
 if (whichNote == 6) {
     c = color (255, 130, 0);
@@ -108,10 +108,10 @@ if (whichNote == 6) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 24;
-    lastFindLedArr[1] = 25;
-    lastFindLedArr[2] = 26;
-    lastFindLedArr[3] = 27;
+    lastFindLedArr[0] = 36;
+    lastFindLedArr[1] = 37;
+    lastFindLedArr[2] = 44;
+    lastFindLedArr[3] = 45;
 }
 if (whichNote == 7) {
     c = color (255, 90, 0);
@@ -122,10 +122,10 @@ if (whichNote == 7) {
     drawX=drawX+60;
     rect(drawX, 120, 40, 40);
     rect(drawX, 180, 40, 40);
-    lastFindLedArr[0] = 28;
-    lastFindLedArr[1] = 29;
-    lastFindLedArr[2] = 30;
-    lastFindLedArr[3] = 31;
+    lastFindLedArr[0] = 52;
+    lastFindLedArr[1] = 53;
+    lastFindLedArr[2] = 60;
+    lastFindLedArr[3] = 61;
 }
 
    ///////// SECOND ROW
@@ -139,10 +139,10 @@ if (whichNote == 7) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 32;
-    lastFindLedArr[1] = 33;
-    lastFindLedArr[2] = 34;
-    lastFindLedArr[3] = 35;
+    lastFindLedArr[0] = 6;
+    lastFindLedArr[1] = 7;
+    lastFindLedArr[2] = 14;
+    lastFindLedArr[3] = 15;
 }
 if (whichNote == 9) {
     c = color (255, 0, 190);
@@ -153,10 +153,10 @@ if (whichNote == 9) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 36;
-    lastFindLedArr[1] = 37;
-    lastFindLedArr[2] = 38;
-    lastFindLedArr[3] = 39;
+    lastFindLedArr[0] = 22;
+    lastFindLedArr[1] = 23;
+    lastFindLedArr[2] = 30;
+    lastFindLedArr[3] = 31;
 }
 if (whichNote == 10) {
     c = color (255, 0, 140);
@@ -167,10 +167,10 @@ if (whichNote == 10) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 40;
-    lastFindLedArr[1] = 41;
-    lastFindLedArr[2] = 42;
-    lastFindLedArr[3] = 43;
+    lastFindLedArr[0] = 38;
+    lastFindLedArr[1] = 39;
+    lastFindLedArr[2] = 46;
+    lastFindLedArr[3] = 47;
 }
 if (whichNote == 11) {
     c = color (255, 0, 90);
@@ -181,10 +181,10 @@ if (whichNote == 11) {
     drawX=drawX+60;
     rect(drawX, 240, 40, 40);
     rect(drawX, 300, 40, 40);
-    lastFindLedArr[0] = 44;
-    lastFindLedArr[1] = 45;
-    lastFindLedArr[2] = 46;
-    lastFindLedArr[3] = 47;
+    lastFindLedArr[0] = 54;
+    lastFindLedArr[1] = 55;
+    lastFindLedArr[2] = 62;
+    lastFindLedArr[3] = 63;
 }
 
    ///////// FIRST ROW
@@ -198,10 +198,10 @@ if (whichNote == 11) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 48;
-    lastFindLedArr[1] = 49;
-    lastFindLedArr[2] = 50;
-    lastFindLedArr[3] = 51;
+    lastFindLedArr[0] = 8;
+    lastFindLedArr[1] = 9;
+    lastFindLedArr[2] = 16;
+    lastFindLedArr[3] = 17;
 }
 if (whichNote == 13) {
     c = color (255, 150, 0);
@@ -212,10 +212,10 @@ if (whichNote == 13) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 52;
-    lastFindLedArr[1] = 53;
-    lastFindLedArr[2] = 54;
-    lastFindLedArr[3] = 55;
+    lastFindLedArr[0] = 24;
+    lastFindLedArr[1] = 25;
+    lastFindLedArr[2] = 32;
+    lastFindLedArr[3] = 33;
 }
 if (whichNote == 14) {
     c = color (255, 20, 0);
@@ -226,10 +226,10 @@ if (whichNote == 14) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 56;
-    lastFindLedArr[1] = 57;
-    lastFindLedArr[2] = 58;
-    lastFindLedArr[3] = 59;
+    lastFindLedArr[0] = 40;
+    lastFindLedArr[1] = 41;
+    lastFindLedArr[2] = 48;
+    lastFindLedArr[3] = 49;
 }
 if (whichNote == 15) {
     c = color (255, 100, 0);
@@ -240,16 +240,19 @@ if (whichNote == 15) {
     drawX=drawX+60;
     rect(drawX, 360, 40, 40);
     rect(drawX, 420, 40, 40);
-    lastFindLedArr[0] = 60;
-    lastFindLedArr[1] = 61;
-    lastFindLedArr[2] = 62;
-    lastFindLedArr[3] = 63;
+    lastFindLedArr[0] = 56;
+    lastFindLedArr[1] = 57;
+    lastFindLedArr[2] = 64;
+    lastFindLedArr[3] = 65;
 }
+
     
-  arduino.digitalWrite(LED[lastFindLedArr[0]], Arduino.HIGH); // COL
-  arduino.digitalWrite(LED[lastFindLedArr[1]], Arduino.HIGH); // COL
-  arduino.digitalWrite(LED[lastFindLedArr[2]], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(LED[lastFindLedArr[3]], Arduino.HIGH);  // ROW
+
+  
+  arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); // COL
+  arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); // COL
+  arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);  // ROW
+  arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  // ROW
 
   displayTheHitNotes = 0;
 }
