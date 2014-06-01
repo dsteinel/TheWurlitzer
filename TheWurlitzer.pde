@@ -13,6 +13,9 @@ Oscil       wave;
 
 FFT fft;
 
+int ledBlinkState = 0;
+float previousBlinkMillis = 0.0;
+
 /* =========== MINIM ============ */
 String note; // name of the note
 int midiNote; //int value midi note
@@ -85,8 +88,8 @@ float average = 0;
 float previousFrequency = 0;
 float currentFrequency = 0;
 int MEASUREFREQHOLD = 0;
+boolean startGame = true;
 
-int displayTheHitNotes = 0;
 
 void setup()
 {
@@ -113,15 +116,6 @@ void setup()
 
 void draw()
 {
-  currentMillis = millis();
-
-
-  //displayNotesToFind(noteToHit);
-  // noteToHit++;
-  // if (noteToHit >= 16) {
-  //   noteToHit = 0;
-  // }
-  // delay(1000);  
   /* TEST LEDS */
 // for (int i = 0; i<64; i++) {
 //   arduino.digitalWrite(LED[i], Arduino.HIGH);
@@ -129,32 +123,63 @@ void draw()
 //   arduino.digitalWrite(LED[i], Arduino.LOW);
 // }
 
-  if (frameCount% (60*1) == 0) {
+  if (startGame) {
+    noteToHit = (int)random(1,16);
+    displayNotesToFind(noteToHit);
+    startGame = false;
+  }
+  
+  currentMillis = millis();
+
+
+  if (frameCount% (60*0.6) == 0) {
     calcFreq();
   }
 
-  // if (noteToHit == currentSingingNote) {
-  //   MEASUREFREQHOLD += 1;
-  //   if(MEASUREFREQHOLD == 1)
-  //     previousMillis = currentMillis + 2500;
-  // }else if(noteToHit != currentSingingNote){
-  //   MEASUREFREQHOLD = 0;
-  //   previousMillis = 0;
-  // }
-  // if(MEASUREFREQHOLD >= 1){
-  //   //println("currentMillis: " + currentMillis + "  |  " + "previousMillis: " + previousMillis);
-  //   if (previousMillis - currentMillis < 0) {  
-  //     animation();
-  //     println("NEXT NOTE TO HIT: " + noteToHit);
-  //     wave.setFrequency(0);
-  //     displayNotesToFind(noteToHit);
-  //     delay(5000);
-  //     resetFindLed();
-  //     resetSingingLed();
-  //     resetAllLed();
-  //     println("finished");
-  //   }
-  // }
+  if (noteToHit == currentSingingNote) {
+    MEASUREFREQHOLD += 1;
+    if(MEASUREFREQHOLD == 1){
+      previousMillis = currentMillis + 2500;
+      previousBlinkMillis = currentMillis + 200;
+    }
+  }else if(noteToHit != currentSingingNote){
+    MEASUREFREQHOLD = 0;
+    previousMillis = 0;
+    previousBlinkMillis = 0;
+  }
+  if(MEASUREFREQHOLD >= 1){
+    println("HIT!");
+    if (previousBlinkMillis - currentMillis < 0){
+      if (ledBlinkState == 0) {
+        arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
+        arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
+        arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
+        arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
+        ledBlinkState = 1; 
+      }
+      
+      else if (ledBlinkState == 1) {
+        arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
+        arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
+        arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
+        arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
+        ledBlinkState = 0;
+      }
+    }
+
+    if (previousMillis - currentMillis < 0) {  
+      animation();
+      println("NEXT NOTE TO HIT: " + noteToHit);
+      wave.setFrequency(0);
+
+      resetSingingLed();
+
+      noteToHit = (int)random(1,16);
+      displayNotesToFind(noteToHit);
+      
+      println("finished");
+    }
+  }
   // println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
   // println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
 
@@ -173,6 +198,19 @@ void drawGrid() {
   }
 }
 
+void displayTheHit(){
+  arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
+  arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
+  arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
+  arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH); 
+  delay(100);
+  arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
+  arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
+  arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
+  arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
+  delay(100); 
+}
+
 void stop()
 {
   in.close();
@@ -181,6 +219,8 @@ void stop()
 }
 
 void keyPressed() {
+  resetAllLed();
+  // displayNotesToFind(noteToHit);
 }
 
 void resetAllLed(){
