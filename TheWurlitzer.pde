@@ -109,10 +109,6 @@ void setup()
     arduino.pinMode(LED[i], Arduino.OUTPUT);
     arduino.digitalWrite(LED[i], Arduino.LOW);
   } 
-  arduino.digitalWrite(18, Arduino.HIGH);
-  arduino.digitalWrite(19, Arduino.HIGH);
-  arduino.digitalWrite(26, Arduino.HIGH);
-  arduino.digitalWrite(27, Arduino.HIGH);
 }
 
 void draw()
@@ -120,12 +116,12 @@ void draw()
   currentMillis = millis();
 
 
-  displayNotesToFind(noteToHit);
-  noteToHit++;
-  if (noteToHit >= 15) {
-    noteToHit = 0;
-  }
-  delay(1000);  
+  //displayNotesToFind(noteToHit);
+  // noteToHit++;
+  // if (noteToHit >= 16) {
+  //   noteToHit = 0;
+  // }
+  // delay(1000);  
   /* TEST LEDS */
 // for (int i = 0; i<64; i++) {
 //   arduino.digitalWrite(LED[i], Arduino.HIGH);
@@ -133,10 +129,9 @@ void draw()
 //   arduino.digitalWrite(LED[i], Arduino.LOW);
 // }
 
-  // if (frameCount% (60*1) == 0) {
-  //   calcFreq();
-  // }
-
+  if (frameCount% (60*1) == 0) {
+    calcFreq();
+  }
 
   // if (noteToHit == currentSingingNote) {
   //   MEASUREFREQHOLD += 1;

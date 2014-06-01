@@ -245,9 +245,6 @@ if (whichNote == 15) {
     lastFindLedArr[2] = 64;
     lastFindLedArr[3] = 65;
 }
-
-    
-
   
   arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); // COL
   arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); // COL
