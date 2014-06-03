@@ -3,12 +3,12 @@ void resetFindLed(){
     arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW);
     arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW);
     arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
-    println("RESET");
+    println("RESET FIND LED");
 }
 
 void displayNotesToFind(int whichNote) {
+    
     resetFindLed();
-    println("displayNotesToFind");
 
     ///////// FOURTH ROW
 
@@ -245,12 +245,19 @@ void displayNotesToFind(int whichNote) {
         lastFindLedArr[2] = 64;
         lastFindLedArr[3] = 65;
     }
+    arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);
 
+    if (displayingNotesToFind) {
+        println("displayingNotesToFind: "+displayingNotesToFind);
+        wave.setAmplitude( 1 );
+        wave.setFrequency( COMPAREFREQUENCY[whichNote] );
+        delay(4000);
+        wave.setFrequency( 0 );
+    }
+    displayingNotesToFind = false;
 
-  arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  // ROW
-
-}
+    }
 

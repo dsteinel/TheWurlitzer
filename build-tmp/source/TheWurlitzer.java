@@ -111,6 +111,7 @@ float previousFrequency = 0;
 float currentFrequency = 0;
 int MEASUREFREQHOLD = 0;
 boolean startGame = true;
+boolean displayingNotesToFind = false;
 
 
 public void setup()
@@ -144,6 +145,7 @@ public void draw()
 //   delay(100);
 //   arduino.digitalWrite(LED[i], Arduino.LOW);
 // }
+  currentMillis = millis();
 
   if (startGame) {
     noteToHit = (int)random(1,16);
@@ -151,9 +153,6 @@ public void draw()
     startGame = false;
   }
   
-  currentMillis = millis();
-
-
   if (frameCount% (60*0.6f) == 0) {
     calcFreq();
   }
@@ -169,34 +168,35 @@ public void draw()
     previousMillis = 0;
     previousBlinkMillis = 0;
   }
-  if(MEASUREFREQHOLD >= 1){
+  if(MEASUREFREQHOLD >= 1 && previousBlinkMillis - currentMillis < 0){
     println("HIT!");
-    if (previousBlinkMillis - currentMillis < 0){
-      if (ledBlinkState == 0) {
-        arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
-        arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
-        arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
-        arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
-        ledBlinkState = 1; 
-      }
-      
-      else if (ledBlinkState == 1) {
-        arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
-        arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
-        arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
-        arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
-        ledBlinkState = 0;
-      }
+    if (ledBlinkState == 0) {
+      arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
+      arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
+      arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
+      arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
+      ledBlinkState = 1; 
+    }
+    
+    else if (ledBlinkState == 1) {
+      arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
+      arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
+      arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
+      arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
+      ledBlinkState = 0;
     }
 
     if (previousMillis - currentMillis < 0) {  
       animation();
-      println("NEXT NOTE TO HIT: " + noteToHit);
       wave.setFrequency(0);
 
       resetSingingLed();
 
       noteToHit = (int)random(1,16);
+      println("NEXT NOTE TO HIT: " + noteToHit);
+
+      displayingNotesToFind = true;
+      delay(2000);
       displayNotesToFind(noteToHit);
       
       println("finished");
@@ -218,19 +218,6 @@ public void drawGrid() {
     }
     x = x + 60;
   }
-}
-
-public void displayTheHit(){
-  arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
-  arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
-  arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
-  arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH); 
-  delay(100);
-  arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
-  arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
-  arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
-  arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
-  delay(100); 
 }
 
 public void stop()
@@ -299,12 +286,12 @@ public void resetFindLed(){
     arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW);
     arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW);
     arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);
-    println("RESET");
+    println("RESET FIND LED");
 }
 
 public void displayNotesToFind(int whichNote) {
+    
     resetFindLed();
-    println("displayNotesToFind");
 
     ///////// FOURTH ROW
 
@@ -541,14 +528,21 @@ public void displayNotesToFind(int whichNote) {
         lastFindLedArr[2] = 64;
         lastFindLedArr[3] = 65;
     }
+    arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);
+    arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);
 
+    if (displayingNotesToFind) {
+        println("displayingNotesToFind: "+displayingNotesToFind);
+        wave.setAmplitude( 1 );
+        wave.setFrequency( COMPAREFREQUENCY[whichNote] );
+        delay(4000);
+        wave.setFrequency( 0 );
+    }
+    displayingNotesToFind = false;
 
-  arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  // ROW
-
-}
+    }
 
 
 public void resetSingingLed() {
@@ -556,7 +550,10 @@ public void resetSingingLed() {
   arduino.digitalWrite(lastSingLedArr[1], Arduino.LOW);
   arduino.digitalWrite(lastSingLedArr[2], Arduino.LOW);
   arduino.digitalWrite(lastSingLedArr[3], Arduino.LOW);
-  displayNotesToFind(noteToHit);
+  if (lastSingLedArr[0] == lastFindLedArr[0] || lastSingLedArr[1] == lastFindLedArr[1] 
+  || lastSingLedArr[2] == lastFindLedArr[2] || lastSingLedArr[3] == lastFindLedArr[3]) {
+    displayNotesToFind(noteToHit);
+  }
 }
 
 public int displaySingingNotes(float frequency) {

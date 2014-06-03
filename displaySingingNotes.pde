@@ -4,7 +4,10 @@ void resetSingingLed() {
   arduino.digitalWrite(lastSingLedArr[1], Arduino.LOW);
   arduino.digitalWrite(lastSingLedArr[2], Arduino.LOW);
   arduino.digitalWrite(lastSingLedArr[3], Arduino.LOW);
-  displayNotesToFind(noteToHit);
+  if (lastSingLedArr[0] == lastFindLedArr[0] || lastSingLedArr[1] == lastFindLedArr[1] 
+  || lastSingLedArr[2] == lastFindLedArr[2] || lastSingLedArr[3] == lastFindLedArr[3]) {
+    displayNotesToFind(noteToHit);
+  }
 }
 
 public int displaySingingNotes(float frequency) {
