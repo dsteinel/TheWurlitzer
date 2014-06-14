@@ -5,7 +5,7 @@ void animation(){
     int randomFreqToPlay = (int)random(0, 63);
     int randomDelay = (int)random(100, 300);
     int randomLED = (int)random(0, 63);
-    wave.setAmplitude( 1 );
+    wave.setAmplitude( 3 );
     wave.setFrequency( ALLFREQS[randomFreqToPlay] );
     println(randomFreqToPlay);
     arduino.digitalWrite(LED[randomLED], Arduino.HIGH);

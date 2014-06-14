@@ -535,7 +535,7 @@ public void displayNotesToFind(int whichNote) {
 
     if (displayingNotesToFind) {
         println("displayingNotesToFind: "+displayingNotesToFind);
-        wave.setAmplitude( 1 );
+        wave.setAmplitude( 2 );
         wave.setFrequency( COMPAREFREQUENCY[whichNote] );
         delay(4000);
         wave.setFrequency( 0 );
@@ -869,7 +869,7 @@ public void animation(){
     int randomFreqToPlay = (int)random(0, 63);
     int randomDelay = (int)random(100, 300);
     int randomLED = (int)random(0, 63);
-    wave.setAmplitude( 1 );
+    wave.setAmplitude( 3 );
     wave.setFrequency( ALLFREQS[randomFreqToPlay] );
     println(randomFreqToPlay);
     arduino.digitalWrite(LED[randomLED], Arduino.HIGH);

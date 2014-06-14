@@ -252,12 +252,12 @@ void displayNotesToFind(int whichNote) {
 
     if (displayingNotesToFind) {
         println("displayingNotesToFind: "+displayingNotesToFind);
-        wave.setAmplitude( 1 );
+        wave.setAmplitude( 2 );
         wave.setFrequency( COMPAREFREQUENCY[whichNote] );
         delay(4000);
         wave.setFrequency( 0 );
     }
+    
     displayingNotesToFind = false;
-
-    }
+}
 
