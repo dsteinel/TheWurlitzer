@@ -1,5 +1,4 @@
-float calcFreq() {
-  float frequency = 0;
+void calcFreq() {
 
   background(0);
   drawGrid();
@@ -18,9 +17,7 @@ float calcFreq() {
     }
   }
 
-  total= total - readings[index];         
   readings[index] = frequency; 
-  total= total + readings[index];       
   index = index + 1;                    
 
   if (index >= numReadings) {  
@@ -28,16 +25,18 @@ float calcFreq() {
     index = 0;
   }      
 
-  midi= 69+14*(log((frequency-6)/440));// formula that transform frequency to midi numbers
-  midiNote = int (midi);//cast to int
-  if(readings[0] != readings[1]){
-    resetSingingLed();
-    displaySingingNotes(frequency);
+  if (frequency > 200 && frequency < 800) {
+    midi= 69+14*(log((frequency-6)/440));// formula that transform frequency to midi numbers
+    midiNote = int (midi);
+    if(readings[0] != readings[1]){
+      resetSingingLed();
+      displaySingingNotes(frequency);
+    }
   }
+  
 
   textSize(20);
   fill(0, 255, 255);
   text (frequency-6+" hz", 10, 20);//display the frequency in hertz
   
-  return frequency;
 }

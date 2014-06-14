@@ -51,7 +51,9 @@ int sampleRate= 44100;
 
 float [] max= new float [sampleRate/2];//array that contains the half of the sampleRate size, because FFT only reads the half of the sampleRate frequency. This array will be filled with amplitude values.
 float maximum;//the maximum amplitude of the max array
-//float frequency;//the frequency in hertz
+
+float frequency = 0;
+
 /* ================================= */
 /**** ARDUINO STUFF ****/
 int LED[] = {
@@ -61,11 +63,11 @@ int LED[] = {
   31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 
   41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 
   51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 
-  61, 62, 63, 64, 65
+  61, 62, 63, 64, 65, 66
 };
 
 int COMPAREFREQUENCY[] = {
-  240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720
+  220, 246, 261, 293, 329, 349, 392, 440, 493, 523, 587, 659, 698, 784, 999
 };
 
 float freqTeiler = 7.5f;
@@ -101,6 +103,7 @@ int previouscurrentSingingNote = 0;
 int noteToHit = 1;
 float previousMillis = 0;
 float currentMillis;
+float timeToHoldTheFreq = 2500;
 
 int numReadings = 2;
 float [] readings = new float [numReadings];
@@ -131,7 +134,7 @@ public void setup()
   
   fft = new FFT(in.left.size(), sampleRate);
 
-  for (int i = 0; i<64; i++) {
+  for (int i = 0; i < 65; i++) {
     arduino.pinMode(LED[i], Arduino.OUTPUT);
     arduino.digitalWrite(LED[i], Arduino.LOW);
   } 
@@ -145,10 +148,12 @@ public void draw()
 //   delay(100);
 //   arduino.digitalWrite(LED[i], Arduino.LOW);
 // }
+
   currentMillis = millis();
 
   if (startGame) {
-    noteToHit = (int)random(1,16);
+    // noteToHit = (int)random(0,13);
+    noteToHit = 5;
     displayNotesToFind(noteToHit);
     startGame = false;
   }
@@ -157,42 +162,67 @@ public void draw()
     calcFreq();
   }
 
-  if (noteToHit == currentSingingNote) {
+  if (frequency == COMPAREFREQUENCY[noteToHit]) {
     MEASUREFREQHOLD += 1;
     if(MEASUREFREQHOLD == 1){
-      previousMillis = currentMillis + 2500;
-      previousBlinkMillis = currentMillis + 200;
+      previousMillis = currentMillis + timeToHoldTheFreq;
     }
-  }else if(noteToHit != currentSingingNote){
+  }else if(frequency != COMPAREFREQUENCY[noteToHit]){
     MEASUREFREQHOLD = 0;
     previousMillis = 0;
     previousBlinkMillis = 0;
   }
-  if(MEASUREFREQHOLD >= 1 && previousBlinkMillis - currentMillis < 0){
+  if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8) {
+    println("truuuu");
+    for (int i = 2; i < 10; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*2) {
+    for (int i = 11; i < 18; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*3) {
+    for (int i = 18; i < 26; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*4) {
+    for (int i = 26; i < 33; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*5) {
+    for (int i = 33; i < 42; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*6) {
+    for (int i = 42; i < 49; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*7) {
+    for (int i = 49; i < 58; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*8) {
+    for (int i = 58; i < 65; ++i) {
+      arduino.digitalWrite(i, Arduino.HIGH);
+    }
+  }
+  if(MEASUREFREQHOLD >= 1){
     println("HIT!");
-    if (ledBlinkState == 0) {
-      arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
-      arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
-      arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
-      arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
-      ledBlinkState = 1; 
-    }
     
-    else if (ledBlinkState == 1) {
-      arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
-      arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
-      arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
-      arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
-      ledBlinkState = 0;
-    }
-
     if (previousMillis - currentMillis < 0) {  
       animation();
       wave.setFrequency(0);
 
       resetSingingLed();
 
-      noteToHit = (int)random(1,16);
+      noteToHit = (int)random(0,13);
       println("NEXT NOTE TO HIT: " + noteToHit);
 
       displayingNotesToFind = true;
@@ -202,9 +232,104 @@ public void draw()
       println("finished");
     }
   }
+
+  // if (noteToHit == currentSingingNote) {
+  //   MEASUREFREQHOLD += 1;
+  //   if(MEASUREFREQHOLD == 1){
+  //     previousMillis = currentMillis + 2500;
+  //     previousBlinkMillis = currentMillis + 200;
+  //   }
+  // }else if(noteToHit != currentSingingNote){
+  //   MEASUREFREQHOLD = 0;
+  //   previousMillis = 0;
+  //   previousBlinkMillis = 0;
+  // }
+  // if(MEASUREFREQHOLD >= 1 && previousBlinkMillis - currentMillis < 0){
+  //   println("HIT!");
+  //   if (ledBlinkState == 0) {
+  //     arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
+  //     arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
+  //     arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
+  //     arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
+  //     ledBlinkState = 1; 
+  //   }
+    
+  //   else if (ledBlinkState == 1) {
+  //     arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
+  //     arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
+  //     arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
+  //     arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
+  //     ledBlinkState = 0;
+  //   }
+
+  //   if (previousMillis - currentMillis < 0) {  
+  //     animation();
+  //     wave.setFrequency(0);
+
+  //     resetSingingLed();
+
+  //     noteToHit = (int)random(0,13);
+  //     println("NEXT NOTE TO HIT: " + noteToHit);
+
+  //     displayingNotesToFind = true;
+  //     delay(2000);
+  //     displayNotesToFind(noteToHit);
+      
+  //     println("finished");
+  //   }
+  // }
   // println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
   // println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
 
+}
+
+public void roadToAnimation(float frequency){
+  resetSingingLed();
+  // if (frequency == COMPAREFREQUENCY[noteToHit]) {
+  //   MEASUREFREQHOLD += 1;
+  //   if(MEASUREFREQHOLD == 1){
+  //     previousMillis = currentMillis + 2500;
+  //     previousBlinkMillis = currentMillis + 200;
+  //   }
+  // }else if(frequency != COMPAREFREQUENCY[noteToHit]){
+  //   MEASUREFREQHOLD = 0;
+  //   previousMillis = 0;
+  //   previousBlinkMillis = 0;
+  // }
+  // if (previousMillis - currentMillis < 2500) {
+  //     for (int i = 2; i < 10; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   if (previousMillis - currentMillis < 1700) {
+  //     for (int i = 26; i < 33; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   if (previousMillis - currentMillis < 900) {
+  //     for (int i = 58; i < 65; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  // if(MEASUREFREQHOLD >= 1){
+  //   println("HIT!");
+    
+  //   if (previousMillis - currentMillis < 0) {  
+  //     animation();
+  //     wave.setFrequency(0);
+
+  //     resetSingingLed();
+
+  //     noteToHit = (int)random(0,13);
+  //     println("NEXT NOTE TO HIT: " + noteToHit);
+
+  //     displayingNotesToFind = true;
+  //     delay(2000);
+  //     displayNotesToFind(noteToHit);
+      
+  //     println("finished");
+  //   }
+  // }
 }
 
 public void drawGrid() {
@@ -238,8 +363,7 @@ public void resetAllLed(){
   }
 }
 
-public float calcFreq() {
-  float frequency = 0;
+public void calcFreq() {
 
   background(0);
   drawGrid();
@@ -258,9 +382,7 @@ public float calcFreq() {
     }
   }
 
-  total= total - readings[index];         
   readings[index] = frequency; 
-  total= total + readings[index];       
   index = index + 1;                    
 
   if (index >= numReadings) {  
@@ -268,18 +390,20 @@ public float calcFreq() {
     index = 0;
   }      
 
-  midi= 69+14*(log((frequency-6)/440));// formula that transform frequency to midi numbers
-  midiNote = PApplet.parseInt (midi);//cast to int
-  if(readings[0] != readings[1]){
-    resetSingingLed();
-    displaySingingNotes(frequency);
+  if (frequency > 200 && frequency < 800) {
+    midi= 69+14*(log((frequency-6)/440));// formula that transform frequency to midi numbers
+    midiNote = PApplet.parseInt (midi);
+    if(readings[0] != readings[1]){
+      resetSingingLed();
+      displaySingingNotes(frequency);
+    }
   }
+  
 
   textSize(20);
   fill(0, 255, 255);
   text (frequency-6+" hz", 10, 20);//display the frequency in hertz
   
-  return frequency;
 }
 public void resetFindLed(){
     arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW);
@@ -291,243 +415,11 @@ public void resetFindLed(){
 
 public void displayNotesToFind(int whichNote) {
     
-    resetFindLed();
-
-    ///////// FOURTH ROW
-
-    if (whichNote == 1) {
-        c = color (100, 0, 255);
-        fill(c);
-        float drawX = 0;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        lastFindLedArr[0] = 2;
-        lastFindLedArr[1] = 3;
-        lastFindLedArr[2] = 10;
-        lastFindLedArr[3] = 11;
-    }
-    if (whichNote == 2) {
-        c = color (100, 100, 255);
-        fill(c);
-        float drawX = 120;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        lastFindLedArr[0] = 18;
-        lastFindLedArr[1] = 19;
-        lastFindLedArr[2] = 26;
-        lastFindLedArr[3] = 27;
-    }
-    if (whichNote == 3) {
-        c = color (100, 150, 255);
-        fill(c);
-        float drawX = 240;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        lastFindLedArr[0] = 34;
-        lastFindLedArr[1] = 35;
-        lastFindLedArr[2] = 42;
-        lastFindLedArr[3] = 43;
-    }
-    if (whichNote == 4) {
-        c = color (100, 200, 255);
-        fill(c);
-        float drawX = 360;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 0, 40, 40);
-        rect(drawX, 60, 40, 40);
-        lastFindLedArr[0] = 50;
-        lastFindLedArr[1] = 51;
-        lastFindLedArr[2] = 58;
-        lastFindLedArr[3] = 59;
-    }
-
-    ///////// THIRD ROW
-
-    if (whichNote == 5) {
-        c = color (255, 255, 0);
-        fill(c);
-        float drawX = 0;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        lastFindLedArr[0] = 4;
-        lastFindLedArr[1] = 5;
-        lastFindLedArr[2] = 12;
-        lastFindLedArr[3] = 13;
-    }
-    if (whichNote == 6) {
-        c = color (255, 200, 0);
-        fill(c);
-        float drawX = 120;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        lastFindLedArr[0] = 20;
-        lastFindLedArr[1] = 21;
-        lastFindLedArr[2] = 28;
-        lastFindLedArr[3] = 29;
-    }
-    if (whichNote == 7) {
-        c = color (255, 130, 0);
-        fill(c);
-        float drawX = 240;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        lastFindLedArr[0] = 36;
-        lastFindLedArr[1] = 37;
-        lastFindLedArr[2] = 44;
-        lastFindLedArr[3] = 45;
-    }
-    if (whichNote == 8) {
-        c = color (255, 90, 0);
-        fill(c);
-        float drawX = 360;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 120, 40, 40);
-        rect(drawX, 180, 40, 40);
-        lastFindLedArr[0] = 52;
-        lastFindLedArr[1] = 53;
-        lastFindLedArr[2] = 60;
-        lastFindLedArr[3] = 61;
-    }
-
-    ///////// SECOND ROW
-
-    if (whichNote == 9) {
-        c = color (255, 0, 255);
-        fill(c);
-        float drawX = 0;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        lastFindLedArr[0] = 6;
-        lastFindLedArr[1] = 7;
-        lastFindLedArr[2] = 14;
-        lastFindLedArr[3] = 15;
-    }
-    if (whichNote == 10) {
-        c = color (255, 0, 190);
-        fill(c);
-        float drawX = 120;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        lastFindLedArr[0] = 22;
-        lastFindLedArr[1] = 23;
-        lastFindLedArr[2] = 30;
-        lastFindLedArr[3] = 31;
-    }
-    if (whichNote == 11) {
-        c = color (255, 0, 140);
-        fill(c);
-        float drawX = 240;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        lastFindLedArr[0] = 38;
-        lastFindLedArr[1] = 39;
-        lastFindLedArr[2] = 46;
-        lastFindLedArr[3] = 47;
-    }
-    if (whichNote == 12) {
-        c = color (255, 0, 90);
-        fill(c);
-        float drawX = 360;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 240, 40, 40);
-        rect(drawX, 300, 40, 40);
-        lastFindLedArr[0] = 54;
-        lastFindLedArr[1] = 55;
-        lastFindLedArr[2] = 62;
-        lastFindLedArr[3] = 63;
-    }
-
-    ///////// FIRST ROW
-
-    if (whichNote == 13) {
-        c = color (255, 200, 0);
-        fill(c);
-        float drawX = 0;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        lastFindLedArr[0] = 8;
-        lastFindLedArr[1] = 9;
-        lastFindLedArr[2] = 16;
-        lastFindLedArr[3] = 17;
-    }
-    if (whichNote == 14) {
-        c = color (255, 150, 0);
-        fill(c);
-        float drawX = 120;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        lastFindLedArr[0] = 24;
-        lastFindLedArr[1] = 25;
-        lastFindLedArr[2] = 32;
-        lastFindLedArr[3] = 33;
-    }
-    if (whichNote == 15) {
-        c = color (255, 20, 0);
-        fill(c);
-        float drawX = 240;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        lastFindLedArr[0] = 40;
-        lastFindLedArr[1] = 41;
-        lastFindLedArr[2] = 48;
-        lastFindLedArr[3] = 49;
-    }
-    if (whichNote == 16) {
-        c = color (255, 100, 0);
-        fill(c);
-        float drawX = 360;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        drawX=drawX+60;
-        rect(drawX, 360, 40, 40);
-        rect(drawX, 420, 40, 40);
-        lastFindLedArr[0] = 56;
-        lastFindLedArr[1] = 57;
-        lastFindLedArr[2] = 64;
-        lastFindLedArr[3] = 65;
-    }
+    //resetFindLed();
+    lastFindLedArr[0] = 30;
+    lastFindLedArr[1] = 29;
+    lastFindLedArr[2] = 37;
+    lastFindLedArr[3] = 38;
     arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH);
     arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH);
     arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);
@@ -536,24 +428,21 @@ public void displayNotesToFind(int whichNote) {
     if (displayingNotesToFind) {
         println("displayingNotesToFind: "+displayingNotesToFind);
         wave.setAmplitude( 2 );
+        //PLAY THE FREQUENCY TO HIT ONE TIME
         wave.setFrequency( COMPAREFREQUENCY[whichNote] );
         delay(4000);
         wave.setFrequency( 0 );
     }
+    
     displayingNotesToFind = false;
-
-    }
+}
 
 
 public void resetSingingLed() {
-  arduino.digitalWrite(lastSingLedArr[0], Arduino.LOW);
-  arduino.digitalWrite(lastSingLedArr[1], Arduino.LOW);
-  arduino.digitalWrite(lastSingLedArr[2], Arduino.LOW);
-  arduino.digitalWrite(lastSingLedArr[3], Arduino.LOW);
-  if (lastSingLedArr[0] == lastFindLedArr[0] || lastSingLedArr[1] == lastFindLedArr[1] 
-  || lastSingLedArr[2] == lastFindLedArr[2] || lastSingLedArr[3] == lastFindLedArr[3]) {
-    displayNotesToFind(noteToHit);
+  for (int i = 0; i < 65; i++) {
+    arduino.digitalWrite(i, Arduino.LOW);
   }
+  displayNotesToFind(noteToHit);
 }
 
 public int displaySingingNotes(float frequency) {
@@ -561,304 +450,61 @@ public int displaySingingNotes(float frequency) {
 
   println("frequency: " + frequency);
 
-  if (frequency >= COMPAREFREQUENCY[0] && frequency < COMPAREFREQUENCY[1] || frequency < COMPAREFREQUENCY[0])
+  if (frequency > COMPAREFREQUENCY[noteToHit-3] && frequency < COMPAREFREQUENCY[noteToHit] || 
+    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+3])
   {
-    currentSingingNote = 1;
-    //links unten
-    c = color (0, 255, 0);
-    fill(c);
-    float drawX = 0;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-
-    lastSingLedArr[0] = 2;
-    lastSingLedArr[1] = 3;
-    lastSingLedArr[2] = 10;
-    lastSingLedArr[3] = 11;
-  } 
-  if ( frequency >= COMPAREFREQUENCY[1] && frequency < COMPAREFREQUENCY[2])
+    for (int left = 2; left < 10; left++) {
+        arduino.digitalWrite(left, Arduino.HIGH);
+    }
+    for (int down = 10; down < 59; down = down + 8) {
+        arduino.digitalWrite(down, Arduino.HIGH);
+    }
+    for (int right = 59; right < 66; right++) {
+        arduino.digitalWrite(right, Arduino.HIGH);
+    }
+    for (int up = 17; up < 65; up = up + 8) {
+        arduino.digitalWrite(up, Arduino.HIGH);
+    }
+  }
+  if (frequency > COMPAREFREQUENCY[noteToHit-2] && frequency < COMPAREFREQUENCY[noteToHit] || 
+    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+2])
   {
-    currentSingingNote = 2;
-    //2te Zeile, letzte Reihe
-    c = color (255, 255, 0);
-    fill(c);
-    float drawX = 120;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-
-    lastSingLedArr[0] = 18;
-    lastSingLedArr[1] = 19;
-    lastSingLedArr[2] = 26;
-    lastSingLedArr[3] = 27;
-  } 
-  if (frequency >= COMPAREFREQUENCY[2] && frequency < COMPAREFREQUENCY[3])
+    for (int left = 10; left < 18; left++) {
+        arduino.digitalWrite(left, Arduino.HIGH);
+    }
+    for (int down = 11; down < 52; down = down + 8) {
+        arduino.digitalWrite(down, Arduino.HIGH);
+    }
+    for (int right = 60; right < 65; right++) {
+        arduino.digitalWrite(right, Arduino.HIGH);
+    }
+    for (int up = 16; up < 59; up = up + 8) {
+        arduino.digitalWrite(up, Arduino.HIGH);
+    }
+  }
+  if (frequency > COMPAREFREQUENCY[noteToHit-1] && frequency < COMPAREFREQUENCY[noteToHit] || 
+    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+1])
   {
-    currentSingingNote = 3;
-    //1te Zeile 4te Reihe
-    c = color (255, 255, 0);
-    fill(c);
-    float drawX = 240;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-
-    lastSingLedArr[0] = 34;
-    lastSingLedArr[1] = 35;
-    lastSingLedArr[2] = 42;
-    lastSingLedArr[3] = 43;
-  } 
-
-  if (frequency >= COMPAREFREQUENCY[3] && frequency < COMPAREFREQUENCY[4])
-  {
-    currentSingingNote = 4;
-    //rechts unten
-    c = color (255, 255, 0);
-    fill(c);
-    float drawX = 360;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 360, 40, 40);
-    rect(drawX, 420, 40, 40);
-
-    lastSingLedArr[0] = 50;
-    lastSingLedArr[1] = 51;
-    lastSingLedArr[2] = 58;
-    lastSingLedArr[3] = 59;
+    println("COMPAREFREQUENCY[noteToHit-2]: "+COMPAREFREQUENCY[noteToHit-1]);
+    for (int left = 20; left < 24; left++) {
+        arduino.digitalWrite(left, Arduino.HIGH);
+    }
+    for (int down = 14; down < 17; down = down + 8) {
+        arduino.digitalWrite(down, Arduino.HIGH);
+    }
+    for (int right = 44; right < 48; right++) {
+        arduino.digitalWrite(right, Arduino.HIGH);
+    }
+    for (int up = 23; up < 27; up = up + 8) {
+        arduino.digitalWrite(up, Arduino.HIGH);
+    }
   }
 
-  ///////// THIRD ROW
-  if (frequency >= COMPAREFREQUENCY[4] && frequency < COMPAREFREQUENCY[5])
+  if (frequency == COMPAREFREQUENCY[noteToHit])
   {
-    currentSingingNote = 5;
-    //3te Reihe links
-    c = color (0, 0, 255);
-    fill(c);
-    float drawX = 0;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-
-    lastSingLedArr[0] = 4;
-    lastSingLedArr[1] = 5;
-    lastSingLedArr[2] = 12;
-    lastSingLedArr[3] = 13;
+    roadToAnimation(frequency);
   }
-  if (frequency >= COMPAREFREQUENCY[5] && frequency < COMPAREFREQUENCY[6])
-  {
-    currentSingingNote = 6;
-    //3te Zeile, 2 Reihe
-    c = color (0, 50, 255);
-    fill(c);
-    float drawX = 120;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-
-    lastSingLedArr[0] = 20;
-    lastSingLedArr[1] = 21;
-    lastSingLedArr[2] = 28;
-    lastSingLedArr[3] = 29;
-  }
-  if (frequency >= COMPAREFREQUENCY[6] && frequency < COMPAREFREQUENCY[7])
-  {
-    currentSingingNote = 7;
-    //3te Zeile, 2te Reihe
-    c = color (0, 150, 255);
-    fill(c);
-    float drawX = 240;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-
-    lastSingLedArr[0] = 36;
-    lastSingLedArr[1] = 37;
-    lastSingLedArr[2] = 44;
-    lastSingLedArr[3] = 45;
-  }
-  if (frequency >= COMPAREFREQUENCY[7] && frequency < COMPAREFREQUENCY[8])
-  {
-    currentSingingNote = 8;
-    //3te Zeile, 3te Reihe
-    c = color (0, 255, 255);
-    fill(c);
-    float drawX = 360;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 240, 40, 40);
-    rect(drawX, 300, 40, 40);
-
-    lastSingLedArr[0] = 52;
-    lastSingLedArr[1] = 53;
-    lastSingLedArr[2] = 60;
-    lastSingLedArr[3] = 61;
-  }
-
-  ///////// SECOND ROW
-  if (frequency >= COMPAREFREQUENCY[8] && frequency < COMPAREFREQUENCY[9])
-  {
-    currentSingingNote = 9;
-    //4te Reihe 6,7
-    c = color (255, 0, 80);
-    fill(c);
-    float drawX = 0;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 6;
-    lastSingLedArr[1] = 7;
-    lastSingLedArr[2] = 14;
-    lastSingLedArr[3] = 15;
-  }
-  if (frequency >= COMPAREFREQUENCY[9] && frequency < COMPAREFREQUENCY[10])
-  {
-    currentSingingNote = 10;
-    //2te Zeile, 3te reihe
-    c = color (255, 0, 150);
-    fill(c);
-    float drawX = 120;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    lastSingLedArr[0] = 22;
-    lastSingLedArr[1] = 23;
-    lastSingLedArr[2] = 30;
-    lastSingLedArr[3] = 31;
-  }
-  if (frequency >= COMPAREFREQUENCY[10] && frequency < COMPAREFREQUENCY[11])
-  {
-    currentSingingNote = 11;
-    //3te Zeile, 3te Reihe
-    c = color (200, 0, 255);
-    fill(c);
-    float drawX = 240;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-
-    lastSingLedArr[0] = 38;
-    lastSingLedArr[1] = 39;
-    lastSingLedArr[2] = 46;
-    lastSingLedArr[3] = 47;
-  }
-  if (frequency >= COMPAREFREQUENCY[11] && frequency < COMPAREFREQUENCY[12])
-  {
-    currentSingingNote = 12;
-    //3te Zeile letzte Reihe
-    c = color (100, 0, 255);
-    fill(c);
-    float drawX = 360;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 120, 40, 40);
-    rect(drawX, 180, 40, 40);
-
-    lastSingLedArr[0] = 54;
-    lastSingLedArr[1] = 55;
-    lastSingLedArr[2] = 62;
-    lastSingLedArr[3] = 63;
-  }
-
-  ///////// FIRST ROW
-  if (frequency >= COMPAREFREQUENCY[12] && frequency < COMPAREFREQUENCY[13])
-  {
-    currentSingingNote = 13;
-    //links oben
-    c = color (255, 0, 0);
-    fill(c);
-    float drawX = 0;
-    rect(drawX, drawX, 40, 40);
-    drawX=drawX+60;
-    rect(0, drawX, 40, 40);
-    rect(drawX, 0, 40, 40);
-    rect(drawX, drawX, 40, 40);
-
-    lastSingLedArr[0] = 8;
-    lastSingLedArr[1] = 9;
-    lastSingLedArr[2] = 16;
-    lastSingLedArr[3] = 17;
-  }
-  if (frequency >= COMPAREFREQUENCY[13] && frequency < COMPAREFREQUENCY[14])
-  {
-    currentSingingNote = 14;
-    //2te Zeile, erste Reihe
-    c = color (255, 0, 0);
-    fill(c);
-    float drawX = 120;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-
-    lastSingLedArr[0] = 24;
-    lastSingLedArr[1] = 25;
-    lastSingLedArr[2] = 32;
-    lastSingLedArr[3] = 33;
-  }
-  if (frequency >= COMPAREFREQUENCY[14] && frequency < COMPAREFREQUENCY[15])
-  {
-    currentSingingNote = 15;
-    //oben rechts 2 letzte
-    c = color (255, 0, 0);
-    fill(c);
-    float drawX = 240;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-    lastSingLedArr[0] = 40;
-    lastSingLedArr[1] = 41;
-    lastSingLedArr[2] = 48;
-    lastSingLedArr[3] = 49;
-  }
-  if (frequency >= COMPAREFREQUENCY[15] && frequency < COMPAREFREQUENCY[16] || frequency > COMPAREFREQUENCY[16])
-  {
-    currentSingingNote = 16;
-    //rechts oben
-    c = color (255, 0, 0);
-    fill(c);
-    float drawX = 360;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-    drawX=drawX+60;
-    rect(drawX, 0, 40, 40);
-    rect(drawX, 60, 40, 40);
-    
-    lastSingLedArr[0] = 56;
-    lastSingLedArr[1] = 57;
-    lastSingLedArr[2] = 64;
-    lastSingLedArr[3] = 65;
-  } 
-
-  arduino.digitalWrite(lastSingLedArr[0], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastSingLedArr[1], Arduino.HIGH); // COL
-  arduino.digitalWrite(lastSingLedArr[2], Arduino.HIGH);  // ROW
-  arduino.digitalWrite(lastSingLedArr[3], Arduino.HIGH);  // ROW
-  
+ 
   return currentSingingNote;
 }
 
