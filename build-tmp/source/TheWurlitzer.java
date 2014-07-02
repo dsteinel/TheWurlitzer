@@ -56,18 +56,30 @@ float frequency = 0;
 
 /* ================================= */
 /**** ARDUINO STUFF ****/
+// int LED[] = {
+//   2, 3, 4, 5, 6, 7, 8, 9, 
+//   10, 11, 12, 13, 14, 15, 16, 17, 
+//   18, 19, 20, 21, 22, 23, 24, 25, 
+//   26, 27, 28, 29, 30, 31, 32, 33, 
+//   34, 35, 36, 37, 38, 39, 40, 41,
+//   42, 43, 44, 45, 46, 47, 48, 49, 
+//   50, 51, 52, 53, 54, 55, 56, 57, 
+//   58, 59, 60, 61, 62, 63, 64, 65
+// };
+
 int LED[] = {
-  2, 3, 4, 5, 6, 7, 8, 9, 10, 
-  11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
-  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 
-  31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 
-  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 
-  51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 
-  61, 62, 63, 64, 65, 66
+  2, 3, 4, 5, 6, 7, 8, 9, 
+  10, 11, 12, 13, 14, 15, 16, 17, 
+  18, 19, 20, 21, 22, 23, 24, 25, 
+  26, 27, 28, 29, 30, 31, 32, 33, 
+  34, 35, 36, 37, 38, 39, 40, 41,
+  42, 43, 44, 45, 46, 47, 48, 49, 
+  50, 51, 52, 53, 69, 68, 67, 66,
+  65, 64, 63, 62, 61, 60, 59, 58
 };
 
-int COMPAREFREQUENCY[] = {
-  220, 246, 261, 293, 329, 349, 392, 440, 493, 523, 587, 659, 698, 784, 999
+int FREQUENCY_TO_HIT[] = {
+  220, 246, 261, 293, 329, 349, 392, 440, 493, 523, 587, 659, 698, 784
 };
 
 float freqTeiler = 7.5f;
@@ -95,9 +107,7 @@ float ALLFREQS[] = {
 };
 
 
-
 /**** OTHER VARS ****/
-int theNote = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit = 1;
@@ -114,8 +124,10 @@ float previousFrequency = 0;
 float currentFrequency = 0;
 int MEASUREFREQHOLD = 0;
 boolean startGame = true;
-boolean displayingNotesToFind = false;
+boolean playHitTone = true;
 
+int hitTollerance = 0;
+boolean youHitIt = false;
 
 public void setup()
 {
@@ -123,7 +135,7 @@ public void setup()
   minim = new Minim(this);
   arduino = new Arduino(this, Arduino.list()[3], 57600);
   
-  minim.debugOn();
+  //minim.debugOn();
   in = minim.getLineIn(Minim.STEREO, 4096, sampleRate);
   out = minim.getLineOut();
   
@@ -134,7 +146,7 @@ public void setup()
   
   fft = new FFT(in.left.size(), sampleRate);
 
-  for (int i = 0; i < 65; i++) {
+  for (int i = 0; i < 64; i++) {
     arduino.pinMode(LED[i], Arduino.OUTPUT);
     arduino.digitalWrite(LED[i], Arduino.LOW);
   } 
@@ -148,188 +160,115 @@ public void draw()
 //   delay(100);
 //   arduino.digitalWrite(LED[i], Arduino.LOW);
 // }
+arduino.pinMode(2, Arduino.OUTPUT);
+arduino.digitalWrite(2, Arduino.LOW);
 
-  currentMillis = millis();
+  // currentMillis = millis();
 
-  if (startGame) {
-    // noteToHit = (int)random(0,13);
-    noteToHit = 5;
-    displayNotesToFind(noteToHit);
-    startGame = false;
-  }
+  // if (startGame) 
+  // {
+  //   noteToHit = (int)random(0,13);
+  //   displayNotesToFind();
+  //   startGame = false;
+  //   println("noteToHit: "+noteToHit);
+  // }
   
-  if (frameCount% (60*0.6f) == 0) {
-    calcFreq();
-  }
-
-  if (frequency == COMPAREFREQUENCY[noteToHit]) {
-    MEASUREFREQHOLD += 1;
-    if(MEASUREFREQHOLD == 1){
-      previousMillis = currentMillis + timeToHoldTheFreq;
-    }
-  }else if(frequency != COMPAREFREQUENCY[noteToHit]){
-    MEASUREFREQHOLD = 0;
-    previousMillis = 0;
-    previousBlinkMillis = 0;
-  }
-  if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8) {
-    println("truuuu");
-    for (int i = 2; i < 10; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*2) {
-    for (int i = 11; i < 18; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*3) {
-    for (int i = 18; i < 26; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*4) {
-    for (int i = 26; i < 33; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*5) {
-    for (int i = 33; i < 42; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*6) {
-    for (int i = 42; i < 49; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*7) {
-    for (int i = 49; i < 58; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*8) {
-    for (int i = 58; i < 65; ++i) {
-      arduino.digitalWrite(i, Arduino.HIGH);
-    }
-  }
-  if(MEASUREFREQHOLD >= 1){
-    println("HIT!");
-    
-    if (previousMillis - currentMillis < 0) {  
-      animation();
-      wave.setFrequency(0);
-
-      resetSingingLed();
-
-      noteToHit = (int)random(0,13);
-      println("NEXT NOTE TO HIT: " + noteToHit);
-
-      displayingNotesToFind = true;
-      delay(2000);
-      displayNotesToFind(noteToHit);
-      
-      println("finished");
-    }
-  }
-
-  // if (noteToHit == currentSingingNote) {
-  //   MEASUREFREQHOLD += 1;
-  //   if(MEASUREFREQHOLD == 1){
-  //     previousMillis = currentMillis + 2500;
-  //     previousBlinkMillis = currentMillis + 200;
-  //   }
-  // }else if(noteToHit != currentSingingNote){
-  //   MEASUREFREQHOLD = 0;
-  //   previousMillis = 0;
-  //   previousBlinkMillis = 0;
+  // if (frameCount% (60*0.6) == 0) {
+  //   calcFreq();
   // }
-  // if(MEASUREFREQHOLD >= 1 && previousBlinkMillis - currentMillis < 0){
-  //   println("HIT!");
-  //   if (ledBlinkState == 0) {
-  //     arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH); 
-  //     arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH); 
-  //     arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH); 
-  //     arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);  
-  //     ledBlinkState = 1; 
+
+  // if (youHitIt)
+  // {
+  //   MEASUREFREQHOLD += 1;
+
+  //   if(MEASUREFREQHOLD == 1){
+  //     previousMillis = currentMillis + timeToHoldTheFreq;
+  //     resetAllLed();
   //   }
     
-  //   else if (ledBlinkState == 1) {
-  //     arduino.digitalWrite(lastFindLedArr[0], Arduino.LOW); 
-  //     arduino.digitalWrite(lastFindLedArr[1], Arduino.LOW); 
-  //     arduino.digitalWrite(lastFindLedArr[2], Arduino.LOW); 
-  //     arduino.digitalWrite(lastFindLedArr[3], Arduino.LOW);  
-  //     ledBlinkState = 0;
-  //   }
-
-  //   if (previousMillis - currentMillis < 0) {  
-  //     animation();
-  //     wave.setFrequency(0);
-
-  //     resetSingingLed();
-
-  //     noteToHit = (int)random(0,13);
-  //     println("NEXT NOTE TO HIT: " + noteToHit);
-
-  //     displayingNotesToFind = true;
-  //     delay(2000);
-  //     displayNotesToFind(noteToHit);
-      
-  //     println("finished");
-  //   }
-  // }
-  // println("lastSingLedArr" + lastSingLedArr[0] + " " + lastSingLedArr[1]+ " " + lastSingLedArr[2] + " " + lastSingLedArr[3]);
-  // println("lastFindLedArr" + lastFindLedArr[0] + " " + lastFindLedArr[1]+ " " + lastFindLedArr[2] + " " + lastFindLedArr[3]);
-
-}
-
-public void roadToAnimation(float frequency){
-  resetSingingLed();
-  // if (frequency == COMPAREFREQUENCY[noteToHit]) {
-  //   MEASUREFREQHOLD += 1;
-  //   if(MEASUREFREQHOLD == 1){
-  //     previousMillis = currentMillis + 2500;
-  //     previousBlinkMillis = currentMillis + 200;
-  //   }
-  // }else if(frequency != COMPAREFREQUENCY[noteToHit]){
-  //   MEASUREFREQHOLD = 0;
-  //   previousMillis = 0;
-  //   previousBlinkMillis = 0;
-  // }
-  // if (previousMillis - currentMillis < 2500) {
+  //   println(previousMillis);
+  //   if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8) 
+  //   {
   //     for (int i = 2; i < 10; ++i) {
   //       arduino.digitalWrite(i, Arduino.HIGH);
   //     }
   //   }
-  //   if (previousMillis - currentMillis < 1700) {
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*2) 
+  //   {
+  //     for (int i = 11; i < 18; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*3) 
+  //   {
+  //     for (int i = 18; i < 26; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*4) 
+  //   {
   //     for (int i = 26; i < 33; ++i) {
   //       arduino.digitalWrite(i, Arduino.HIGH);
   //     }
   //   }
-  //   if (previousMillis - currentMillis < 900) {
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*5) 
+  //   {
+  //     for (int i = 33; i < 42; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*6) 
+  //   {
+  //     for (int i = 42; i < 49; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*7) 
+  //   {
+  //     for (int i = 49; i < 58; ++i) {
+  //       arduino.digitalWrite(i, Arduino.HIGH);
+  //     }
+  //   }
+  //   else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*8) 
+  //   {
   //     for (int i = 58; i < 65; ++i) {
   //       arduino.digitalWrite(i, Arduino.HIGH);
   //     }
   //   }
-  // if(MEASUREFREQHOLD >= 1){
-  //   println("HIT!");
-    
-  //   if (previousMillis - currentMillis < 0) {  
-  //     animation();
-  //     wave.setFrequency(0);
-
-  //     resetSingingLed();
-
-  //     noteToHit = (int)random(0,13);
-  //     println("NEXT NOTE TO HIT: " + noteToHit);
-
-  //     displayingNotesToFind = true;
-  //     delay(2000);
-  //     displayNotesToFind(noteToHit);
-      
-  //     println("finished");
-  //   }
   // }
+  // else if (!youHitIt){
+  //   MEASUREFREQHOLD = 0;
+  //   previousMillis = 0;
+  // }
+
+  // else if(frequency != FREQUENCY_TO_HIT[noteToHit] || youHitIt == false)
+  // {
+  //   MEASUREFREQHOLD = 0;
+  //   previousMillis = 0;
+  //   previousBlinkMillis = 0;
+  // }
+  
+  // if(MEASUREFREQHOLD >= 1 && previousMillis - currentMillis < 0)
+  // {
+  //   println("HIT!");
+  
+  //   animation();
+  //   wave.setFrequency(0);
+
+  //   resetSingingLed();
+
+  //   noteToHit = (int)random(0,13);
+  //   println("NEXT NOTE TO HIT: " + noteToHit);
+
+  //   delay(2000);
+  //   displayNotesToFind();
+    
+  //   println("finished");
+  // }
+}
+
+public void roadToAnimation(float frequency){
+  resetSingingLed();
 }
 
 public void drawGrid() {
@@ -353,14 +292,26 @@ public void stop()
 }
 
 public void keyPressed() {
-  resetAllLed();
-  // displayNotesToFind(noteToHit);
+  resetSingingLed();
+  //resetAllLed();
+  // displayNotesToFind();
+  println("RESET SINGING LED");  
 }
 
 public void resetAllLed(){
   for (int i = 0; i < 64; i++) {
     arduino.digitalWrite(LED[i], Arduino.LOW);
   }
+}
+
+public void resetSingingLed(){
+  for (int i = 0; i < 64; i++) {
+    arduino.digitalWrite(LED[i], Arduino.LOW);
+  }
+  arduino.digitalWrite(LED[27], Arduino.HIGH);
+  arduino.digitalWrite(LED[28], Arduino.HIGH);
+  arduino.digitalWrite(LED[35], Arduino.HIGH);
+  arduino.digitalWrite(LED[36], Arduino.HIGH);
 }
 
 public void calcFreq() {
@@ -395,6 +346,8 @@ public void calcFreq() {
     midiNote = PApplet.parseInt (midi);
     if(readings[0] != readings[1]){
       resetSingingLed();
+    }
+    else {
       displaySingingNotes(frequency);
     }
   }
@@ -413,101 +366,110 @@ public void resetFindLed(){
     println("RESET FIND LED");
 }
 
-public void displayNotesToFind(int whichNote) {
+public void displayNotesToFind() {
     
-    //resetFindLed();
-    lastFindLedArr[0] = 30;
-    lastFindLedArr[1] = 29;
-    lastFindLedArr[2] = 37;
-    lastFindLedArr[3] = 38;
-    arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);
+    arduino.digitalWrite(29, Arduino.HIGH);
+    arduino.digitalWrite(30, Arduino.HIGH);
+    arduino.digitalWrite(37, Arduino.HIGH);
+    arduino.digitalWrite(38, Arduino.HIGH);
 
-    if (displayingNotesToFind) {
-        println("displayingNotesToFind: "+displayingNotesToFind);
-        wave.setAmplitude( 2 );
-        //PLAY THE FREQUENCY TO HIT ONE TIME
-        wave.setFrequency( COMPAREFREQUENCY[whichNote] );
-        delay(4000);
-        wave.setFrequency( 0 );
+    if (playHitTone) {
+        wave.setAmplitude( 3 );
+        println("ALLFREQS[noteToHit]: "+FREQUENCY_TO_HIT[noteToHit]);
+        wave.setFrequency( FREQUENCY_TO_HIT[noteToHit] );
+        delay(2000);
+        wave.setAmplitude( 0 );   
+        playHitTone = false;      
     }
-    
-    displayingNotesToFind = false;
 }
 
-
-public void resetSingingLed() {
-  for (int i = 0; i < 65; i++) {
-    arduino.digitalWrite(i, Arduino.LOW);
-  }
-  displayNotesToFind(noteToHit);
-}
 
 public int displaySingingNotes(float frequency) {
   ///////// FOURTH ROW
 
   println("frequency: " + frequency);
+  hitTollerance = FREQUENCY_TO_HIT[noteToHit]*5/100;
+  println("hitTollerance: "+hitTollerance);
 
-  if (frequency > COMPAREFREQUENCY[noteToHit-3] && frequency < COMPAREFREQUENCY[noteToHit] || 
-    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+3])
-  {
-    for (int left = 2; left < 10; left++) {
-        arduino.digitalWrite(left, Arduino.HIGH);
-    }
-    for (int down = 10; down < 59; down = down + 8) {
-        arduino.digitalWrite(down, Arduino.HIGH);
-    }
-    for (int right = 59; right < 66; right++) {
-        arduino.digitalWrite(right, Arduino.HIGH);
-    }
-    for (int up = 17; up < 65; up = up + 8) {
-        arduino.digitalWrite(up, Arduino.HIGH);
-    }
-  }
-  if (frequency > COMPAREFREQUENCY[noteToHit-2] && frequency < COMPAREFREQUENCY[noteToHit] || 
-    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+2])
-  {
-    for (int left = 10; left < 18; left++) {
-        arduino.digitalWrite(left, Arduino.HIGH);
-    }
-    for (int down = 11; down < 52; down = down + 8) {
-        arduino.digitalWrite(down, Arduino.HIGH);
-    }
-    for (int right = 60; right < 65; right++) {
-        arduino.digitalWrite(right, Arduino.HIGH);
-    }
-    for (int up = 16; up < 59; up = up + 8) {
-        arduino.digitalWrite(up, Arduino.HIGH);
-    }
-  }
-  if (frequency > COMPAREFREQUENCY[noteToHit-1] && frequency < COMPAREFREQUENCY[noteToHit] || 
-    frequency > COMPAREFREQUENCY[noteToHit] && frequency < COMPAREFREQUENCY[noteToHit+1])
-  {
-    println("COMPAREFREQUENCY[noteToHit-2]: "+COMPAREFREQUENCY[noteToHit-1]);
-    for (int left = 20; left < 24; left++) {
-        arduino.digitalWrite(left, Arduino.HIGH);
-    }
-    for (int down = 14; down < 17; down = down + 8) {
-        arduino.digitalWrite(down, Arduino.HIGH);
-    }
-    for (int right = 44; right < 48; right++) {
-        arduino.digitalWrite(right, Arduino.HIGH);
-    }
-    for (int up = 23; up < 27; up = up + 8) {
-        arduino.digitalWrite(up, Arduino.HIGH);
-    }
-  }
 
-  if (frequency == COMPAREFREQUENCY[noteToHit])
+  if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
+    frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit]+(FREQUENCY_TO_HIT[noteToHit]*20)/100)
   {
-    roadToAnimation(frequency);
+    outerRing();
+    delay(300);
+
+    if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*15)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
+    frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*15)/100)
+    {
+      middleRing();
+      delay(300);
+
+      if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*7.5f)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
+      frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*7.5f)/100)
+      {
+        innerRing();
+        delay(300);
+        if (frequency > FREQUENCY_TO_HIT[noteToHit]-hitTollerance && frequency < FREQUENCY_TO_HIT[noteToHit]+hitTollerance)
+        {
+          youHitIt = true;   
+        }
+      }
+    }
   }
  
+  else if (frequency < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
+    frequency > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
+  {
+    resetSingingLed();
+    youHitIt = false;
+  }
   return currentSingingNote;
 }
 
+
+public void outerRing(){
+  for (int left = 2; left < 10; left++) {
+    arduino.digitalWrite(left, Arduino.HIGH);
+  }
+  for (int down = 10; down < 59; down = down + 8) {
+    arduino.digitalWrite(down, Arduino.HIGH);
+  }
+  for (int right = 59; right < 66; right++) {
+    arduino.digitalWrite(right, Arduino.HIGH);
+  }
+  for (int up = 17; up < 65; up = up + 8) {
+    arduino.digitalWrite(up, Arduino.HIGH);
+  }
+}
+public void middleRing(){
+  for (int left = 11; left < 18; left++) {
+    arduino.digitalWrite(left, Arduino.HIGH);
+  }
+  for (int down = 19; down < 52; down = down + 8) {
+    arduino.digitalWrite(down, Arduino.HIGH);
+  }
+  for (int right = 52; right < 57; right++) {
+    arduino.digitalWrite(right, Arduino.HIGH);
+  }
+  for (int up = 16; up < 59; up = up + 8) {
+    arduino.digitalWrite(up, Arduino.HIGH);
+  }
+}
+
+public void innerRing(){
+  for (int left = 20; left < 24; left++) {
+    arduino.digitalWrite(left, Arduino.HIGH);
+  }
+  for (int down = 20; down < 45; down = down + 8) {
+    arduino.digitalWrite(down, Arduino.HIGH);
+  }
+  for (int right = 45; right < 48; right++) {
+    arduino.digitalWrite(right, Arduino.HIGH);
+  }
+  for (int up = 24; up < 49; up = up + 8) {
+    arduino.digitalWrite(up, Arduino.HIGH);
+  }
+}
 public void animation(){
   println("HELL YEAH");
 
@@ -522,6 +484,8 @@ public void animation(){
     delay(randomDelay);
     resetAllLed();
     delay(100);
+    playHitTone = true;
+    youHitIt = false;
   }
 }
   static public void main(String[] passedArgs) {

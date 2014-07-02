@@ -30,6 +30,8 @@ void calcFreq() {
     midiNote = int (midi);
     if(readings[0] != readings[1]){
       resetSingingLed();
+    }
+    else {
       displaySingingNotes(frequency);
     }
   }

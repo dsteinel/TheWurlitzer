@@ -6,27 +6,20 @@ void resetFindLed(){
     println("RESET FIND LED");
 }
 
-void displayNotesToFind(int whichNote) {
+void displayNotesToFind() {
     
-    //resetFindLed();
-    lastFindLedArr[0] = 30;
-    lastFindLedArr[1] = 29;
-    lastFindLedArr[2] = 37;
-    lastFindLedArr[3] = 38;
-    arduino.digitalWrite(lastFindLedArr[0], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[1], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[2], Arduino.HIGH);
-    arduino.digitalWrite(lastFindLedArr[3], Arduino.HIGH);
+    arduino.digitalWrite(29, Arduino.HIGH);
+    arduino.digitalWrite(30, Arduino.HIGH);
+    arduino.digitalWrite(37, Arduino.HIGH);
+    arduino.digitalWrite(38, Arduino.HIGH);
 
-    if (displayingNotesToFind) {
-        println("displayingNotesToFind: "+displayingNotesToFind);
-        wave.setAmplitude( 2 );
-        //PLAY THE FREQUENCY TO HIT ONE TIME
-        wave.setFrequency( COMPAREFREQUENCY[whichNote] );
-        delay(4000);
-        wave.setFrequency( 0 );
+    if (playHitTone) {
+        wave.setAmplitude( 3 );
+        println("ALLFREQS[noteToHit]: "+FREQUENCY_TO_HIT[noteToHit]);
+        wave.setFrequency( FREQUENCY_TO_HIT[noteToHit] );
+        delay(2000);
+        wave.setAmplitude( 0 );   
+        playHitTone = false;      
     }
-    
-    displayingNotesToFind = false;
 }
 

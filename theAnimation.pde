@@ -12,5 +12,7 @@ void animation(){
     delay(randomDelay);
     resetAllLed();
     delay(100);
+    playHitTone = true;
+    youHitIt = false;
   }
 }
