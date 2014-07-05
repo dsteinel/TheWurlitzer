@@ -54,6 +54,7 @@ int displaySingingNotes(int frequency) {
 void outerRing(){
   for (int left = 2; left < 10; left++) {
     digitalWrite(left, HIGH);
+    digitalWrite(LED[0], HIGH);
   }
   for (int down = 10; down < 59; down = down + 8) {
     digitalWrite(down, HIGH);

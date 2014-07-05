@@ -8,10 +8,10 @@ void resetFindLed(){
 
 void displayNotesToFind() {
     
-    digitalWrite(29, HIGH);
-    digitalWrite(30, HIGH);
-    digitalWrite(37, HIGH);
-    digitalWrite(38, HIGH);
+    digitalWrite(LED[27], HIGH);
+    digitalWrite(LED[28], HIGH);
+    digitalWrite(LED[36], HIGH);
+    digitalWrite(LED[35], HIGH);
 
     if (playHitTone) {
         playHitTone = false;      
