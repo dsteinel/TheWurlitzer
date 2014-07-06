@@ -1,14 +1,15 @@
- #include "notes.h"
+#include "notes.h"
 
 /**************** FREQ COUNTER ****************/
 volatile unsigned long firstPulseTime;
 volatile unsigned long lastPulseTime;
 volatile unsigned long numPulses;
-unsigned int timeToMeasure = 10;
+unsigned int timeToMeasure = 200;
 /* ================================= */
 
 int ledBlinkState = 0;
 float previousBlinkMillis = 0.0;
+byte incomingByte;
 
 /**** ARDUINO STUFF ****/
 
@@ -23,8 +24,13 @@ int LED[] = {
   58, 59, 60, 61, 62, 63, 64, 65
 };
 
-int FREQUENCY_TO_HIT[] = {
+const int FREQUENCY_TO_HIT[] = {
   220, 246, 261, 293, 329, 349, 392, 440, 493, 523, 587, 659, 698, 784
+};
+
+const int PLAY_THE_HIT_NOTE[] = {
+  NOTE_A3, NOTE_B3, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, 
+  NOTE_E5, NOTE_F5, NOTE_G5
 };
 
 int HIGHESFREQ = 720;
@@ -42,17 +48,14 @@ int melodyNotes[] = {
 
 
 /**** OTHER VARS ****/
+int hitTimer = 0;
+
+int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
-int noteToHit = 1;
-float previousMillis = 0;
-float currentMillis;
-float timeToHoldTheFreq = 2500;
+int noteToHit;
 
-int index = 0;
-int MEASUREFREQHOLD = 0;
 boolean startGame = true;
-boolean playHitTone = true;
 
 int hitTollerance = 0;
 boolean youHitIt = false;
@@ -66,169 +69,65 @@ void setup()
   for (int i = 0; i < 65; i++) {
     pinMode(LED[i], OUTPUT);
     digitalWrite(LED[i], LOW);
-  } 
+  }
+  randomSeed(analogRead(13));
 }
 
 void loop()
 {
   /* TEST LEDS */
-//    for (int i = 0; i<65; i++) {
-//      digitalWrite(LED[i], HIGH);
-//      delay(250);
-//      digitalWrite(LED[i], LOW);
-//    }
-  
+  //    for (int i = 0; i<65; i++) {
+  //      digitalWrite(LED[i], HIGH);
+  //      delay(250);
+  //      digitalWrite(LED[i], LOW);
+  //    }
+
 
   int frequency = readFrequency(timeToMeasure);
-  currentMillis = millis();
 
+  Serial.println(frequency);
   if (startGame) 
   {
-    //    noteToHit = (int)random(0,13);
-    noteToHit = 5;
-    displayNotesToFind();
+    noteToHit = random(0,13);
+    //noteToHit = 5;
+    currentLevel = 1;
+    for (int i = 0; i < 65; ++i) {
+      digitalWrite(LED[i], HIGH);
+    }
+    tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
+
+    displayNotesToFind(currentLevel);
+    delay(1000);
     startGame = false;
   }
 
-  //  displaySingingNotes();
+  displaySingingNotes(frequency);
 
-
-
-  /***** OUTER RING *****/
-  Serial.println(frequency);
-  hitTollerance = FREQUENCY_TO_HIT[noteToHit]*5/100;
-  //  Serial.println(FREQUENCY_TO_HIT[noteToHit]);
-
-
-  if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
-    frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit]+(FREQUENCY_TO_HIT[noteToHit]*20)/100)
-  {
-    outerRing();
-
-
-    if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*15)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
-      frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*15)/100)
-    {
-
-      middleRing();
-
-      frequency = readFrequency(timeToMeasure);
-
-      if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*7.5)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
-        frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*7.5)/100)
-      {
-
-        innerRing();
-
-        frequency = readFrequency(timeToMeasure);
-
-        if (frequency > FREQUENCY_TO_HIT[noteToHit]-hitTollerance && frequency < FREQUENCY_TO_HIT[noteToHit]+hitTollerance)
-        {
-          youHitIt = true;   
-        }
-      }
-    }
+  incomingByte = Serial.read();
+  if (incomingByte == '1') {
+    noteToHit = random(0,13);
+    currentLevel = 1;
+    displayNotesToFind(currentLevel);
+  } 
+  if (incomingByte == '2') {
+    noteToHit = random(0,13);
+    currentLevel = 2;
+    displayNotesToFind(currentLevel);
   }
-  else if (frequency < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
-    frequency > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
-  {
-    resetSingingLed();
-    youHitIt = false;
-  }
-
-  if (youHitIt)
-  {
-    Serial.println("YEAH");
-    MEASUREFREQHOLD += 1;
-
-    if(MEASUREFREQHOLD == 1){
-      previousMillis = currentMillis + timeToHoldTheFreq;
-      resetAllLed();
-    }
-
-    if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8) 
-    {
-      for (int i = 2; i < 10; ++i) {
-        digitalWrite(i, HIGH);
-        digitalWrite(LED[0], HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*2) 
-    {
-      for (int i = 11; i < 18; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*3) 
-    {
-      for (int i = 18; i < 26; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*4) 
-    {
-      for (int i = 26; i < 33; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*5) 
-    {
-      for (int i = 33; i < 42; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*6) 
-    {
-      for (int i = 42; i < 49; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*7) 
-    {
-      for (int i = 49; i < 58; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-    else if (previousMillis - currentMillis > timeToHoldTheFreq - timeToHoldTheFreq/8*8) 
-    {
-      for (int i = 58; i < 65; ++i) {
-        digitalWrite(i, HIGH);
-      }
-    }
-  }
-  else if (!youHitIt){
-    MEASUREFREQHOLD = 0;
-    previousMillis = 0;
-  }
-
-  else if(currentFreq != FREQUENCY_TO_HIT[noteToHit] || youHitIt == false)
-  {
-    MEASUREFREQHOLD = 0;
-    previousMillis = 0;
-    previousBlinkMillis = 0;
-  }
-
-  if(MEASUREFREQHOLD >= 1 && previousMillis - currentMillis < 0)
-  {
-    Serial.println("HIT!");
-
-    animation();
-
-    resetSingingLed();
-
-    noteToHit = (int)random(0,13);
-    Serial.println("NEXT NOTE TO HIT: " + noteToHit);
-
-    delay(2000);
-    displayNotesToFind();
-
-    Serial.println("finished");
+  if (incomingByte == '3') {
+    noteToHit = random(0,13);
+    currentLevel = 3;
+    displayNotesToFind(currentLevel);
+  } 
+  if (incomingByte == '4') {
+    noteToHit = random(0,13);
+    currentLevel = 4;
+    displayNotesToFind(currentLevel);
   }
 }
 
-
 void roadToAnimation(float frequency){
-  resetSingingLed();
+  resetSingingLed(currentLevel);
 }
 
 void resetAllLed(){
@@ -237,18 +136,71 @@ void resetAllLed(){
   }
 }
 
-void resetSingingLed(){
+void resetSingingLed(int resetLevel){
   for (int i = 0; i < 64; i++) {
     digitalWrite(LED[i], LOW);
   }
-  digitalWrite(LED[27], HIGH);
-  digitalWrite(LED[28], HIGH);
-  digitalWrite(LED[36], HIGH);
-  digitalWrite(LED[35], HIGH);
+  switch (resetLevel) {
+  case 1:
+    digitalWrite(LED[51], HIGH);
+    digitalWrite(LED[52], HIGH);
+    digitalWrite(LED[59], HIGH);
+    digitalWrite(LED[60], HIGH);
 
+    break;
+
+  case 2:
+    digitalWrite(LED[51], HIGH);
+    digitalWrite(LED[52], HIGH);
+    digitalWrite(LED[59], HIGH);
+    digitalWrite(LED[60], HIGH);
+
+    digitalWrite(LED[35], HIGH);
+    digitalWrite(LED[36], HIGH);
+    digitalWrite(LED[43], HIGH);
+    digitalWrite(LED[44], HIGH);
+    break;
+
+  case 3:
+    digitalWrite(LED[51], HIGH);
+    digitalWrite(LED[52], HIGH);
+    digitalWrite(LED[59], HIGH);
+    digitalWrite(LED[60], HIGH);
+
+    digitalWrite(LED[35], HIGH);
+    digitalWrite(LED[36], HIGH);
+    digitalWrite(LED[43], HIGH);
+    digitalWrite(LED[44], HIGH);
+
+    digitalWrite(LED[19], HIGH);
+    digitalWrite(LED[20], HIGH);
+    digitalWrite(LED[27], HIGH);
+    digitalWrite(LED[28], HIGH);
+    break;
+
+  case 4:
+    digitalWrite(LED[3], HIGH);
+    digitalWrite(LED[4], HIGH);
+    digitalWrite(LED[11], HIGH);
+    digitalWrite(LED[12], HIGH);
+
+    digitalWrite(LED[19], HIGH);
+    digitalWrite(LED[20], HIGH);
+    digitalWrite(LED[27], HIGH);
+    digitalWrite(LED[28], HIGH);
+
+    digitalWrite(LED[35], HIGH);
+    digitalWrite(LED[36], HIGH);
+    digitalWrite(LED[43], HIGH);
+    digitalWrite(LED[44], HIGH);
+
+    digitalWrite(LED[51], HIGH);
+    digitalWrite(LED[52], HIGH);
+    digitalWrite(LED[59], HIGH);
+    digitalWrite(LED[60], HIGH);
+    break;
+  }
 }
-
-
 
 
 

@@ -1,145 +1,155 @@
+/****** if equal = youHitIt = true ********/
 
 int displaySingingNotes(int frequency) {
+  int singingLevel = 0;
+  int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*10/100;
+  int holdFreqCounter = 0;
   
+  Serial.print("FREQUENCY_TO_HIT");
+  Serial.println(FREQUENCY_TO_HIT[noteToHit]);
   Serial.println(frequency);
-  hitTollerance = FREQUENCY_TO_HIT[noteToHit]*5/100;
-//  Serial.println(FREQUENCY_TO_HIT[noteToHit]);
-
-
-  if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
-    frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit]+(FREQUENCY_TO_HIT[noteToHit]*20)/100)
+  
+  if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 150)
   {
-    outerRing();
-    delay(300);
-    
-//    
-//    if (referenceFreq > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*15)/100 && referenceFreq < FREQUENCY_TO_HIT[noteToHit] || 
-//    referenceFreq > FREQUENCY_TO_HIT[noteToHit] && referenceFreq < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*15)/100)
-//    {
-//      
-//      middleRing();
-//      
-//      delay(300);
-//      
-//      referenceFreq = readFrequency(timeToMeasure);
-//
-//      if (frequency > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*7.5)/100 && frequency < FREQUENCY_TO_HIT[noteToHit] || 
-//      frequency > FREQUENCY_TO_HIT[noteToHit] && frequency < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*7.5)/100)
-//      {
-//        
-//        innerRing();
-//        
-//        delay(300);
-//        
-//        referenceFreq = readFrequency(timeToMeasure);
-//        
-//        if (referenceFreq > FREQUENCY_TO_HIT[noteToHit]-hitTollerance && referenceFreq < FREQUENCY_TO_HIT[noteToHit]+hitTollerance)
-//        {
-//          youHitIt = true;   
-//        }
-//      }
-//    }
+    Serial.println("THIS IS FIRST");
+    singingLevel = 1;
+
+    if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 100)
+    {
+      Serial.println("THIS IS SECOND");
+      singingLevel = 2;
+
+      if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 50)
+      {
+        Serial.println("THIS IS THIRD");
+        singingLevel = 3;
+      }
+    }
+    hitTimer = 0;
+    youHitIt = false;
   }
- 
-//  else if (frequency < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
-//    frequency > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
-//  {
-//    resetSingingLed();
-//    youHitIt = false;
-//  }
+
+  if(frequency > FREQUENCY_TO_HIT[noteToHit] + hitTollerance && frequency < FREQUENCY_TO_HIT[noteToHit] + 150)
+  {
+    singingLevel = 4;
+
+    if(frequency > FREQUENCY_TO_HIT[noteToHit] + hitTollerance && frequency < FREQUENCY_TO_HIT[noteToHit] + 100)
+    {
+      singingLevel = 5;
+
+      if(frequency > FREQUENCY_TO_HIT[noteToHit] + hitTollerance && frequency < FREQUENCY_TO_HIT[noteToHit] + 50)
+      {
+        singingLevel = 6;
+      }
+    }
+    hitTimer = 0;
+    youHitIt = false;
+  }
+//
+//  else 
+//    resetSingingLed(currentLevel);
+
+  singingLEDLevel(singingLevel);
+
+
+  if(frequency == FREQUENCY_TO_HIT[noteToHit] || frequency >= FREQUENCY_TO_HIT[noteToHit] - hitTollerance &&
+    frequency <= FREQUENCY_TO_HIT[noteToHit] + hitTollerance)
+  {
+    Serial.println("YEAH");
+    hitTimer++;
+    Serial.print("holdFreqCounter");
+    Serial.println(hitTimer);
+
+    for (int i = 0; i < 65; ++i) {
+      digitalWrite(LED[i], HIGH);
+    }
+    
+  }
+  else
+    hitTimer = 0;
+
+  if(hitTimer == 5)
+  {
+    Serial.println("HIT!");
+    hitTimer = 0;
+   animation();
+
+    resetSingingLed(currentLevel);
+
+    noteToHit = (int)random(0,13);
+    Serial.println("NEXT NOTE TO HIT: " + noteToHit);
+    currentLevel++;
+    delay(2000);
+
+    displayNotesToFind(currentLevel);
+
+    if(currentLevel > 4){
+      /* BLA BLA */
+      finishAnimation();
+    }
+  }
   return currentSingingNote;
 }
 
+void singingLEDLevel(int tooHighTooLow){
+  resetSingingLed(currentLevel);
 
-void outerRing(){
-  for (int left = 2; left < 10; left++) {
-    digitalWrite(left, HIGH);
-    digitalWrite(LED[0], HIGH);
-  }
-  for (int down = 10; down < 59; down = down + 8) {
-    digitalWrite(down, HIGH);
-  }
-  for (int right = 59; right < 66; right++) {
-    digitalWrite(right, HIGH);
-  }
-  for (int up = 17; up < 65; up = up + 8) {
-    digitalWrite(up, HIGH);
-  }
-  
-  delay(300);
-  int referenceFreq = readFrequency(timeToMeasure);
-  
-  if (referenceFreq > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*15)/100 && referenceFreq < FREQUENCY_TO_HIT[noteToHit] || 
-  referenceFreq > FREQUENCY_TO_HIT[noteToHit] && referenceFreq < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*15)/100)
-  {
-    middleRing();
-  }
-  
-  else if (referenceFreq < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
-    referenceFreq > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
-  {
-    resetSingingLed();
-  }
-}
+  switch (tooHighTooLow) {
+  case 1:
+    for (int index = 0; index < 63; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }  
+    break;
 
-void middleRing(){
-  for (int left = 11; left < 17; left++) {
-    digitalWrite(left, HIGH);
-  }
-  for (int down = 19; down < 52; down = down + 8) {
-    digitalWrite(down, HIGH);
-  }
-  for (int right = 52; right < 57; right++) {
-    digitalWrite(right, HIGH);
-  }
-  for (int up = 16; up < 59; up = up + 8) {
-    digitalWrite(up, HIGH);
-  }
-  
-  int referenceFreq = readFrequency(timeToMeasure);
-  
-  if (referenceFreq > FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*7.5)/100 && referenceFreq < FREQUENCY_TO_HIT[noteToHit] || 
-    referenceFreq > FREQUENCY_TO_HIT[noteToHit] && referenceFreq < FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*7.5)/100)
-    {
-      innerRing();
-      
-      delay(1000);
-      
-      referenceFreq = readFrequency(timeToMeasure);
-     
+  case 2:
+    for (int index = 0; index < 63; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    } 
+    for (int index = 1; index < 62; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
     }
-   else if (referenceFreq < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
-    referenceFreq > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
-  {
-    resetSingingLed();
-    outerRing();
+    break;
+
+  case 3:
+    for (int index = 2; index < 61; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    } 
+    for (int index = 1; index < 62; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }
+    for (int index = 0; index < 63; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }
+    break;
+
+  case 4:
+    for (int index = 7; index < 66; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }          
+    break;
+
+  case 5:
+    for (int index = 7; index < 66; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }  
+    for (int index = 6; index < 65; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }
+    break;
+
+  case 6:
+    for (int index = 7; index < 66; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }  
+    for (int index = 6; index < 65; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }
+    for (int index = 5; index < 64; index = index + 8) {
+      digitalWrite(LED[index], HIGH);
+    }
+    break;
   }
 }
 
-void innerRing(){
-  for (int left = 20; left < 24; left++) {
-    digitalWrite(left, HIGH);
-  }
-  for (int down = 20; down < 45; down = down + 8) {
-    digitalWrite(down, HIGH);
-  }
-  for (int right = 45; right < 48; right++) {
-    digitalWrite(right, HIGH);
-  }
-  for (int up = 24; up < 49; up = up + 8) {
-    digitalWrite(up, HIGH);
-  }
-  
-  int referenceFreq = readFrequency(timeToMeasure);
-  
- if (referenceFreq > FREQUENCY_TO_HIT[noteToHit]-hitTollerance && referenceFreq < FREQUENCY_TO_HIT[noteToHit]+hitTollerance)
-    {
-      youHitIt = true;   
-    }
-   else if (referenceFreq < FREQUENCY_TO_HIT[noteToHit] - (FREQUENCY_TO_HIT[noteToHit]*20)/100 || 
-    referenceFreq > FREQUENCY_TO_HIT[noteToHit] + (FREQUENCY_TO_HIT[noteToHit]*20)/100)
-  {
-    resetSingingLed();
-    middleRing();
-  }
-}
+
+
