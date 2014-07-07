@@ -33,8 +33,7 @@ const int PLAY_THE_HIT_NOTE[] = {
   NOTE_E5, NOTE_F5, NOTE_G5
 };
 
-int HIGHESFREQ = 720;
-
+/***** MELODY *****/
 int melodyNotes[] = {
   NOTE_B0, NOTE_C1, NOTE_CS1, NOTE_D1, NOTE_DS1, NOTE_E1, NOTE_F1, NOTE_FS1, 
   NOTE_G1, NOTE_GS1, NOTE_A1, NOTE_AS1, NOTE_B1, NOTE_C2, NOTE_CS2, NOTE_D2,  
@@ -46,6 +45,13 @@ int melodyNotes[] = {
   NOTE_G5, NOTE_GS5, NOTE_A5, NOTE_AS5, NOTE_B5, NOTE_C6, NOTE_CS6, NOTE_D6
 };
 
+int melody[] = {
+  NOTE_G4, NOTE_G4,NOTE_G4, NOTE_E4, NOTE_B4,NOTE_G4, NOTE_E4, NOTE_B4, NOTE_G4};
+
+
+int noteDurations[] = {
+  4, 8, 8, 4, 4 , 8 , 8 , 4 };
+
 
 /**** OTHER VARS ****/
 int hitTimer = 0;
@@ -54,6 +60,10 @@ int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit;
+
+int currentMillis = 0;
+int repeatMillis = 0;
+int timeToRepeat = 5000;
 
 boolean startGame = true;
 
@@ -84,25 +94,35 @@ void loop()
 
 
   int frequency = readFrequency(timeToMeasure);
+  unsigned long currentMillis = millis();
 
   Serial.println(frequency);
+
+  /***** CHECK IF THIS IS WORKING ****/
+  Serial.println(currentMillis);
+
   if (startGame) 
   {
     noteToHit = random(0,13);
-    //noteToHit = 5;
+    repeatMillis = currentMillis + timeToRepeat;
+
     currentLevel = 1;
     for (int i = 0; i < 65; ++i) {
       digitalWrite(LED[i], HIGH);
     }
     tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
-
     displayNotesToFind(currentLevel);
     delay(1000);
+    noTone(68);
     startGame = false;
   }
 
   displaySingingNotes(frequency);
 
+
+
+
+/* KEYBOARD INPUT FOR TESTING PURPOSE */
   incomingByte = Serial.read();
   if (incomingByte == '1') {
     noteToHit = random(0,13);
@@ -126,81 +146,6 @@ void loop()
   }
 }
 
-void roadToAnimation(float frequency){
-  resetSingingLed(currentLevel);
-}
-
-void resetAllLed(){
-  for (int i = 0; i < 64; i++) {
-    digitalWrite(LED[i], LOW);
-  }
-}
-
-void resetSingingLed(int resetLevel){
-  for (int i = 0; i < 64; i++) {
-    digitalWrite(LED[i], LOW);
-  }
-  switch (resetLevel) {
-  case 1:
-    digitalWrite(LED[51], HIGH);
-    digitalWrite(LED[52], HIGH);
-    digitalWrite(LED[59], HIGH);
-    digitalWrite(LED[60], HIGH);
-
-    break;
-
-  case 2:
-    digitalWrite(LED[51], HIGH);
-    digitalWrite(LED[52], HIGH);
-    digitalWrite(LED[59], HIGH);
-    digitalWrite(LED[60], HIGH);
-
-    digitalWrite(LED[35], HIGH);
-    digitalWrite(LED[36], HIGH);
-    digitalWrite(LED[43], HIGH);
-    digitalWrite(LED[44], HIGH);
-    break;
-
-  case 3:
-    digitalWrite(LED[51], HIGH);
-    digitalWrite(LED[52], HIGH);
-    digitalWrite(LED[59], HIGH);
-    digitalWrite(LED[60], HIGH);
-
-    digitalWrite(LED[35], HIGH);
-    digitalWrite(LED[36], HIGH);
-    digitalWrite(LED[43], HIGH);
-    digitalWrite(LED[44], HIGH);
-
-    digitalWrite(LED[19], HIGH);
-    digitalWrite(LED[20], HIGH);
-    digitalWrite(LED[27], HIGH);
-    digitalWrite(LED[28], HIGH);
-    break;
-
-  case 4:
-    digitalWrite(LED[3], HIGH);
-    digitalWrite(LED[4], HIGH);
-    digitalWrite(LED[11], HIGH);
-    digitalWrite(LED[12], HIGH);
-
-    digitalWrite(LED[19], HIGH);
-    digitalWrite(LED[20], HIGH);
-    digitalWrite(LED[27], HIGH);
-    digitalWrite(LED[28], HIGH);
-
-    digitalWrite(LED[35], HIGH);
-    digitalWrite(LED[36], HIGH);
-    digitalWrite(LED[43], HIGH);
-    digitalWrite(LED[44], HIGH);
-
-    digitalWrite(LED[51], HIGH);
-    digitalWrite(LED[52], HIGH);
-    digitalWrite(LED[59], HIGH);
-    digitalWrite(LED[60], HIGH);
-    break;
-  }
-}
 
 
 

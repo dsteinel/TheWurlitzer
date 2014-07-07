@@ -11,17 +11,14 @@ int displaySingingNotes(int frequency) {
   
   if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 150)
   {
-    Serial.println("THIS IS FIRST");
     singingLevel = 1;
 
     if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 100)
     {
-      Serial.println("THIS IS SECOND");
       singingLevel = 2;
 
       if (frequency < FREQUENCY_TO_HIT[noteToHit] - hitTollerance && frequency > FREQUENCY_TO_HIT[noteToHit] - 50)
       {
-        Serial.println("THIS IS THIRD");
         singingLevel = 3;
       }
     }
