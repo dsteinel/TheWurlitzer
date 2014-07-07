@@ -1,13 +1,6 @@
-void resetFindLed(){
-  //    digitalWrite(lastFindLedArr[0], LOW);
-  //    digitalWrite(lastFindLedArr[1], LOW);
-  //    digitalWrite(lastFindLedArr[2], LOW);
-  //    digitalWrite(lastFindLedArr[3], LOW);
-  Serial.println("RESET FIND LED");
-}
-
 int displayNotesToFind(int thisLevel){
-  tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
+  //tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
+  tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
 
   switch (thisLevel) {
   case 1:
