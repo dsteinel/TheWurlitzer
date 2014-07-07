@@ -54,7 +54,6 @@ const int noteDurations[] = {
 
 
 /**** OTHER VARS ****/
-int hitTimer = 0;
 
 int currentLevel = 0;
 int currentSingingNote = 0;
@@ -71,7 +70,11 @@ int hitTollerance = 0;
 boolean youHitIt = false;
 
 int currentFreq;
+int previousFreq = 0;
 int usableFreq;
+
+int timetoHoldFreq = 1500;
+
 
 void setup()
 {

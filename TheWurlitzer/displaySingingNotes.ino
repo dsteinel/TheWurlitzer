@@ -59,10 +59,6 @@ void displaySingingNotes() {
   if(frequency >= (FREQUENCY_TO_HIT[noteToHit] - hitTollerance) || 
     frequency < (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
   {
-    hitTimer++;
-
-    Serial.print("hitTimer");
-    Serial.println(hitTimer);
 
     /********** DO SOME FANCY STUFF **********/
     for (int i = 0; i < 65; ++i) {
@@ -70,8 +66,11 @@ void displaySingingNotes() {
     }
     /* ================================= */
 
-    if(hitTimer == 5)
+
+    if ((millis() - previousFreq) > timetoHoldFreq)
     {
+      previousFreq = millis();
+
       Serial.println("HIT!");
       hitTimer = 0;
       animation();
@@ -81,7 +80,7 @@ void displaySingingNotes() {
       noteToHit = (int)random(0,13);
       Serial.println("NEXT NOTE TO HIT: " + noteToHit);
       currentLevel++;
-      
+
       delay(2000);
 
       displayNotesToFind(currentLevel);
@@ -90,11 +89,11 @@ void displaySingingNotes() {
         finishAnimation();
       }
     }
-
+    
     /********* IF NO HIT *********/
+
     else
-    hitTimer = 0;
-  }
+    previousFreq = millis();
   //return currentSingingNote;
 }
 
