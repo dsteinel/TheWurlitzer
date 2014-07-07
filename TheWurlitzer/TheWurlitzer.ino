@@ -93,7 +93,8 @@ void loop()
   //    }
 
 
-  int frequency = readFrequency(timeToMeasure);
+  //int frequency = readFrequency(timeToMeasure);
+
   unsigned long currentMillis = millis();
 
   Serial.println(frequency);
@@ -119,7 +120,9 @@ void loop()
   }
 
   else
-    displaySingingNotes(frequency);
+    // displaySingingNotes(frequency);
+    displaySingingNotes();
+
 
 
 /* KEYBOARD INPUT FOR TESTING PURPOSE */

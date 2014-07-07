@@ -1,58 +1,57 @@
 /****** if equal = youHitIt = true ********/
 
-void displaySingingNotes(int frequency) {
+void displaySingingNotes() {
   int singingLevel = 0;
-  int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*10/100;
+  int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   
+  int frequency = readFrequency(timeToMeasure);
+
   Serial.print("FREQUENCY_TO_HIT");
   Serial.println(FREQUENCY_TO_HIT[noteToHit]);
   Serial.println(frequency);
   
-
-  if(frequency < (FREQUENCY_TO_HIT[noteToHit] - hitTollerance) || frequency > (FREQUENCY_TO_HIT[noteToHit] + hitTollerance)){
-    if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150 || frequency < FREQUENCY_TO_HIT[noteToHit] + 150))
-    {
-      hitTimer = 0;
-      youHitIt = false;
-    }
-
-    /********* TOO LOW *********/
-
-    if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150))
-    {
-      singingLevel = 1;
-    } 
-    if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 100))
-    {
-      singingLevel = 2;
-    }
-
-    if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 50))
-    {
-      singingLevel = 3;
-    }
-
-    /********* TOO HIGH *********/
-
-    if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 150))
-    {
-      singingLevel = 4;
-    }
-
-    if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 100))
-    {
-      singingLevel = 5;
-    }
-
-    if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 50))
-    {
-      singingLevel = 6;
-    }
-    singingLEDLevel(singingLevel);
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150 || frequency < FREQUENCY_TO_HIT[noteToHit] + 150))
+  {
+    hitTimer = 0;
+    youHitIt = false;
   }
 
+  /********* TOO LOW *********/
+
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150))
+  {
+    singingLevel = 1;
+  } 
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 100))
+  {
+    singingLevel = 2;
+  }
+
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 50))
+  {
+    singingLevel = 3;
+  }
+
+  /********* TOO HIGH *********/
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 150))
+  {
+    singingLevel = 4;
+  }
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 100))
+  {
+    singingLevel = 5;
+  }
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 50))
+  {
+    singingLevel = 6;
+  }
+  singingLEDLevel(singingLevel);
+
   else 
-    resetSingingLed(currentLevel);
+  resetSingingLed(currentLevel);
 
 
   /********* IF HIT *********/
@@ -70,7 +69,7 @@ void displaySingingNotes(int frequency) {
       digitalWrite(LED[i], HIGH);
     }
     /* ================================= */
-  
+
     if(hitTimer == 5)
     {
       Serial.println("HIT!");
@@ -88,13 +87,12 @@ void displaySingingNotes(int frequency) {
       displayNotesToFind(currentLevel);
 
       if(currentLevel > 4){
-        /* BLA BLA */
         finishAnimation();
       }
-  }
-  
-  /********* IF NO HIT *********/
-  else
+    }
+
+    /********* IF NO HIT *********/
+    else
     hitTimer = 0;
   }
   //return currentSingingNote;
@@ -105,13 +103,15 @@ void singingLEDLevel(int tooHighTooLow){
 
   /********* TOO LOW *********/
   switch (tooHighTooLow) {
-  case 1:
+    // case 0:
+    // break;
+    case 1:
     for (int index = 0; index < 63; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     }  
     break;
 
-  case 2:
+    case 2:
     for (int index = 0; index < 63; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     } 
@@ -120,7 +120,7 @@ void singingLEDLevel(int tooHighTooLow){
     }
     break;
 
-  case 3:
+    case 3:
     for (int index = 2; index < 61; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     } 
@@ -131,14 +131,14 @@ void singingLEDLevel(int tooHighTooLow){
       digitalWrite(LED[index], HIGH);
     }
     break;
-  /********* TOO HIGH *********/
-  case 4:
+    /********* TOO HIGH *********/
+    case 4:
     for (int index = 7; index < 66; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     }          
     break;
 
-  case 5:
+    case 5:
     for (int index = 7; index < 66; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     }  
@@ -147,7 +147,7 @@ void singingLEDLevel(int tooHighTooLow){
     }
     break;
 
-  case 6:
+    case 6:
     for (int index = 7; index < 66; index = index + 8) {
       digitalWrite(LED[index], HIGH);
     }  
