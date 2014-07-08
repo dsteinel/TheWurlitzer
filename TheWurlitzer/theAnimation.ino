@@ -7,7 +7,7 @@ void animation(){
     delay(pauseBetweenNotes);
     noTone(68);
   }
-
+  repeatMillis = millis();
   delay(500);
   resetAllLed();
 
