@@ -59,8 +59,6 @@ int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit;
-//int frequency = 0;
-
 
 int currentMillis = 0;
 int repeatMillis = 0;
@@ -89,12 +87,34 @@ void setup()
 void loop()
 {
   /* TEST LEDS */
-     // for (int i = 0; i<65; i++) {
-     //   digitalWrite(LED[i], HIGH);
-     //   delay(250);
-     //   digitalWrite(LED[i], LOW);
-     // }
+   
+  //allLedOn();
 
+  unsigned long currentMillis = millis();
+
+  if (startGame) 
+  {
+    //noteToHit = random(0,13);
+    noteToHit = 5;
+    repeatMillis = currentMillis + timeToRepeat;
+
+
+    displaySingingNotes(currentLevel);
+
+    currentLevel = 1;
+    for (int i = 0; i < 65; ++i) {
+      digitalWrite(LED[i], HIGH);
+    }
+    tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
+    // displayNotesToFind(currentLevel);
+    delay(1000);
+    noTone(68);
+    startGame = false;
+  }
+}
+
+
+void allLedOn(){
   // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
   PORTA = B11111111;
   PORTB = B11111111;
@@ -107,63 +127,6 @@ void loop()
   PORTJ = B11111111;
   PORTL = B11111111;
   //analog pins
-  PORTF = B11111111;
-  PORTK = B11111111;
-
-  //frequency = readFrequency(timeToMeasure);
-
-  unsigned long currentMillis = millis();
-
-  if (startGame) 
-  {
-    //noteToHit = random(0,13);
-    noteToHit = 5;
-    repeatMillis = currentMillis + timeToRepeat;
-
-    currentLevel = 1;
-    for (int i = 0; i < 65; ++i) {
-      digitalWrite(LED[i], HIGH);
-    }
-    tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
-    displayNotesToFind(currentLevel);
-    delay(1000);
-    noTone(68);
-    startGame = false;
-  }
-
-  else
-    displaySingingNotes();
-
-
-
-/* KEYBOARD INPUT FOR TESTING PURPOSE */
-  incomingByte = Serial.read();
-  if (incomingByte == '1') {
-    noteToHit = random(0,13);
-    currentLevel = 1;
-    displayNotesToFind(currentLevel);
-    resetAllLed();
-  } 
-  if (incomingByte == '2') {
-    for (int i = 0; i < 65; ++i) {
-      digitalWrite(LED[i], HIGH);
-    }
-    noteToHit = random(0,13);
-    currentLevel = 2;
-    displayNotesToFind(currentLevel);
-  }
-  if (incomingByte == '3') {
-    noteToHit = random(0,13);
-    currentLevel = 3;
-    displayNotesToFind(currentLevel);
-  } 
-  if (incomingByte == '4') {
-    noteToHit = random(0,13);
-    currentLevel = 4;
-    displayNotesToFind(currentLevel);
-  }
+  PORTK = B10111111;
 }
-
-
-
 
