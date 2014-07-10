@@ -59,8 +59,11 @@ int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit;
+<<<<<<< HEAD
 // int frequency;
 
+=======
+>>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 
 int currentMillis = 0;
 int repeatMillis = 0;
@@ -90,8 +93,12 @@ void loop()
 {
   /* TEST LEDS */
    
+<<<<<<< HEAD
   // frequency = readFrequency(timeToMeasure);
   // Serial.println(frequency);
+=======
+  //allLedOn();
+>>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 
   unsigned long currentMillis = millis();
 
@@ -101,52 +108,28 @@ void loop()
     noteToHit = 5;
     repeatMillis = currentMillis + timeToRepeat;
 
+
+    displaySingingNotes(currentLevel);
+
     currentLevel = 1;
     //showAllLED();
 
     tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
-    displayNotesToFind(currentLevel);
+    // displayNotesToFind(currentLevel);
     delay(1000);
     noTone(68);
     startGame = false;
   }
-
-  else
-    displaySingingNotes();
-
-
-
-/* KEYBOARD INPUT FOR TESTING PURPOSE */
-  incomingByte = Serial.read();
-  if (incomingByte == '1') {
-    noteToHit = random(0,13);
-    currentLevel = 1;
-    displayNotesToFind(currentLevel);
-    resetAllLed();
-  } 
-  if (incomingByte == '2') {
-    for (int i = 0; i < 65; ++i) {
-      digitalWrite(LED[i], HIGH);
-    }
-    noteToHit = random(0,13);
-    currentLevel = 2;
-    displayNotesToFind(currentLevel);
-  }
-  if (incomingByte == '3') {
-    noteToHit = random(0,13);
-    currentLevel = 3;
-    displayNotesToFind(currentLevel);
-  } 
-  if (incomingByte == '4') {
-    noteToHit = random(0,13);
-    currentLevel = 4;
-    displayNotesToFind(currentLevel);
-  }
 }
 
 
+<<<<<<< HEAD
 void showAllLED(){
 	// digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
+=======
+void allLedOn(){
+  // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
+>>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
   PORTA = B11111111;
   PORTB = B11111111;
   PORTC = B11111111;
@@ -158,8 +141,13 @@ void showAllLED(){
   PORTJ = B11111111;
   PORTL = B11111111;
   //analog pins
+<<<<<<< HEAD
   PORTF = B11111111;
   PORTK = B11111111;
 }
 
+=======
+  PORTK = B10111111;
+}
+>>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 

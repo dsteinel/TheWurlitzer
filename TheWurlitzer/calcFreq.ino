@@ -22,17 +22,9 @@ float readFrequency(unsigned int sampleTime)
   attachInterrupt(0, isr, RISING);    // enable the interrupt
   delay(sampleTime);
   detachInterrupt(0);
+
   return (numPulses < 3) ? 0 : (1000000.0 * (float)(numPulses - 2))/(float)(lastPulseTime - firstPulseTime);
 }
-
-/*** THIS IS CALLED BY LOOP ***/
-//int calcFreq(){
-//  int currentFreq = readFrequency(timeToMeasure);
-//  return currentFreq;
-//}
-
-
-
 
 
 
