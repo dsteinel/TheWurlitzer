@@ -4,9 +4,6 @@ void displaySingingNotes() {
   int singingLevel = 0;
   int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   int frequency = readFrequency(timeToMeasure);
-
-//  Serial.print("FREQUENCY_TO_HIT");
-//  Serial.println(FREQUENCY_TO_HIT[noteToHit]);
   Serial.println(frequency);
 
   if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency < (FREQUENCY_TO_HIT[noteToHit] + 150))

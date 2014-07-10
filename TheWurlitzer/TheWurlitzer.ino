@@ -59,7 +59,7 @@ int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit;
-//int frequency = 0;
+// int frequency;
 
 
 int currentMillis = 0;
@@ -89,28 +89,9 @@ void setup()
 void loop()
 {
   /* TEST LEDS */
-     // for (int i = 0; i<65; i++) {
-     //   digitalWrite(LED[i], HIGH);
-     //   delay(250);
-     //   digitalWrite(LED[i], LOW);
-     // }
-
-  // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
-  PORTA = B11111111;
-  PORTB = B11111111;
-  PORTC = B11111111;
-  PORTD = B11111111;
-  PORTE = B11101100;
-  PORTF = B11111111;
-  PORTG = B11111111;
-  PORTH = B11111111;
-  PORTJ = B11111111;
-  PORTL = B11111111;
-  //analog pins
-  PORTF = B11111111;
-  PORTK = B11111111;
-
-  //frequency = readFrequency(timeToMeasure);
+   
+  // frequency = readFrequency(timeToMeasure);
+  // Serial.println(frequency);
 
   unsigned long currentMillis = millis();
 
@@ -121,9 +102,8 @@ void loop()
     repeatMillis = currentMillis + timeToRepeat;
 
     currentLevel = 1;
-    for (int i = 0; i < 65; ++i) {
-      digitalWrite(LED[i], HIGH);
-    }
+    //showAllLED();
+
     tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
     displayNotesToFind(currentLevel);
     delay(1000);
@@ -165,5 +145,21 @@ void loop()
 }
 
 
+void showAllLED(){
+	// digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
+  PORTA = B11111111;
+  PORTB = B11111111;
+  PORTC = B11111111;
+  PORTD = B11111111;
+  PORTE = B11101100;
+  PORTF = B11111111;
+  PORTG = B11111111;
+  PORTH = B11111111;
+  PORTJ = B11111111;
+  PORTL = B11111111;
+  //analog pins
+  PORTF = B11111111;
+  PORTK = B11111111;
+}
 
 
