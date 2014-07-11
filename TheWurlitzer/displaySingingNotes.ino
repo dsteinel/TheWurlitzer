@@ -4,11 +4,13 @@ void displaySingingNotes() {
   int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   int frequency = readFrequency(timeToMeasure);
 
-  // Serial.println(frequency);
 
   if(frequency == 0){
-  // levelOneSinging = 0;
-  // levelTwoSinging = 0;
+    resetFader--;
+    if(resetFader <= 0){
+      levelOneSinging = 0;
+      levelTwoSinging = 0; 
+    }
     resetSingingLed(currentLevel);
   }
   /********* TOO LOW *********/
@@ -88,7 +90,7 @@ void singingLEDLevel(int tooHighTooLow){
   if(!disableFirstLevel){
     switch (tooHighTooLow) {
       case 0:
-      resetSingingLed(currentLevel);
+      //resetSingingLed(currentLevel);
       break;
 
       case 1:

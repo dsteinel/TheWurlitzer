@@ -5,9 +5,10 @@ void animation(){
   levelTwoSinging = 0;
 /*** =========== ***/
 
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
+  for (int thisNote = 0; thisNote < 11; thisNote++) {
     int noteDuration = 1000/noteDurations[thisNote];
-    tone(68, melody[thisNote],noteDuration);
+    int randomNote = random(0, 8);
+    tone(68, melody[randomNote],noteDuration);
     int pauseBetweenNotes = noteDuration * 1.30;
     int pickPin = random(0, 64);
     
