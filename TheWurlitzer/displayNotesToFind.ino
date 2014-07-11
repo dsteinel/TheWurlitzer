@@ -1,7 +1,4 @@
 int displayNotesToFind(int thisLevel){
-  //tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
-  // tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
-
   switch (thisLevel) {
   case 1:
     digitalWrite(LED[51], HIGH);
@@ -61,7 +58,6 @@ int displayNotesToFind(int thisLevel){
     digitalWrite(LED[60], HIGH);
     break;
   }
-  delay(1000);
 }
 
 

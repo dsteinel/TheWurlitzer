@@ -1,34 +1,41 @@
 /****** if equal = youHitIt = true ********/
 
 void displaySingingNotes() {
-  int singingLevel = 0;
-  int maxFreqLoop = 5;
-  int averageFreq;
   int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   int frequency = readFrequency(timeToMeasure);
 
-  Serial.println(frequency);
+  // Serial.println(frequency);
 
-  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency < (FREQUENCY_TO_HIT[noteToHit] + 150))
-  {
-    youHitIt = false;
+  if(frequency == 0){
+    resetFader--;
+    if(resetFader == 0){
+      resetFader = maxCounterValue;
+      singingLevel = 0;
+      resetSingingLed(currentLevel);
+    }
+
   }
-
   /********* TOO LOW *********/
 
   if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) && frequency < (FREQUENCY_TO_HIT[noteToHit] - 100))
   {
     singingLevel = 1;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   } 
 
   if (frequency > (FREQUENCY_TO_HIT[noteToHit]) - 100 && frequency < (FREQUENCY_TO_HIT[noteToHit] - 50))
   {
     singingLevel = 2;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
   if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 50) && frequency < (FREQUENCY_TO_HIT[noteToHit] - hitTollerance))
   {
     singingLevel = 3;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
   /********* TOO HIGH *********/
@@ -36,50 +43,52 @@ void displaySingingNotes() {
   if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 150) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 100))
   {
     singingLevel = 4;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
   if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 100) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 50))
   {
     singingLevel = 5;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
   if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 50) && frequency > (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
   {
     singingLevel = 6;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
   if(frequency < (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency > (FREQUENCY_TO_HIT[noteToHit] + 150))
   {
     resetSingingLed(currentLevel);
+    littleCounter = maxCounterValue;
   }
 
-
   /********* IF HIT *********/
-
   if(frequency >= (FREQUENCY_TO_HIT[noteToHit] - hitTollerance) && 
     frequency < (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
   {
-    /********** DO SOME FANCY STUFF **********/
-    allLedOn();
-    /* ================================= */
-    singingLevel = 7;
-    
-    Serial.println("HIT!");
+    littleCounter--;
+    if(littleCounter == 0){
+      allLedOn();
+      singingLevel = 7;    
+    }    
   }
   singingLEDLevel(singingLevel);
-
 }
 
-  void singingLEDLevel(int tooHighTooLow){
-    resetSingingLed(currentLevel);
+void singingLEDLevel(int tooHighTooLow){
+  /********* TOO LOW *********/
+  switch (tooHighTooLow) {
+    case 0:
+    break;
 
-    /********* TOO LOW *********/
-    switch (tooHighTooLow) {
-    // case 0:
-    // break;
     case 1:
     /**** FIRST ROW ****/
-    PORTK = B10000000; // P69
+    PORTK = B11000000; // P69
     PORTB = B00011000; // P10 && P50
     PORTD = B00001000; // P18
     PORTA = B00010000; // P26
@@ -152,18 +161,10 @@ void displaySingingNotes() {
     break;
 
     case 7:
-    resetSingingLed(currentLevel);
     animation();
-    
-    if(currentLevel > 4){
+    if(currentLevel > 8){
       currentLevel = 1;
-        //finishAnimation();
       }
-
     break;  
     }
-}
-
-
-
-
+  }
