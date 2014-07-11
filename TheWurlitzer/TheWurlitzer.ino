@@ -1,10 +1,12 @@
 #include "notes.h"
+//#include <Time.h>
+//#include <TimeAlarms.h>
 
 /**************** FREQ COUNTER ****************/
 volatile unsigned long firstPulseTime;
 volatile unsigned long lastPulseTime;
 volatile unsigned long numPulses;
-unsigned int timeToMeasure = 50;
+unsigned int timeToMeasure = 70;
 /* ================================= */
 
 /**** ARDUINO STUFF ****/
@@ -57,25 +59,23 @@ const int melody[] = {
 const int noteDurations[] = {
   4, 8, 8, 4, 4 , 8 , 8 , 4 };
 
+const int resetFaderMaxValue = 20;
+
 /**** OTHER VARS ****/
 boolean startGame = true;
 
 int currentLevel = 0;
 int currentSingingNote = 0;
 int noteToHit;
-
 int maxCounterValue = 10;
 int littleCounter = 0;
 int singingLevel = 0;
-
 int resetFader = 0; 
-const int resetFaderMaxValue = 20;
-
 int hitTollerance = 0;
 
 void setup()
 {
-   // Serial.begin(9600);
+  Serial.begin(9600);
   for (int i = 0; i < 65; i++) {
     pinMode(LED[i], OUTPUT);
     digitalWrite(LED[i], LOW);
@@ -86,6 +86,9 @@ void setup()
 void loop()
 {
   displaySingingNotes();
+  
+  //Alarm.timerRepeat(5, playToneAgain);
+  
   if (startGame) 
   {
     noteToHit = random(0,13);
@@ -116,3 +119,8 @@ void allLedOn(){
   PORTK = B11111111;
 }
 
+void playToneAgain(){
+ tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
+ delay(1000); 
+ noTone(68);
+}

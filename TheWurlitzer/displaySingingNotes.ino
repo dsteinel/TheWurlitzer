@@ -13,7 +13,6 @@ void displaySingingNotes() {
       singingLevel = 0;
       resetSingingLed(currentLevel);
     }
-
   }
   /********* TOO LOW *********/
 
@@ -64,7 +63,7 @@ void displaySingingNotes() {
   if(frequency < (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency > (FREQUENCY_TO_HIT[noteToHit] + 150))
   {
     resetSingingLed(currentLevel);
-    littleCounter = maxCounterValue;
+    // littleCounter = maxCounterValue;
   }
 
   /********* IF HIT *********/
@@ -84,8 +83,8 @@ void singingLEDLevel(int tooHighTooLow){
   /********* TOO LOW *********/
   switch (tooHighTooLow) {
     case 0:
+    resetSingingLed(currentLevel);
     break;
-
     case 1:
     /**** FIRST ROW ****/
     PORTK = B11000000; // P69
