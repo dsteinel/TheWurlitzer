@@ -8,8 +8,17 @@ void animation(){
 
   for (int thisNote = 0; thisNote < 20; thisNote++) {
     int noteDuration = 1000/noteDurations[thisNote];
-    if(thisNote == 10){
-      noteDuration = 700;
+    if(thisNote == 16){
+      noteDuration = 300;
+    }
+    else if(thisNote == 17){
+      noteDuration = 350;
+    }
+    else if(thisNote == 18){
+      noteDuration = 400;
+    }
+    else if(thisNote == 19){
+      noteDuration = 450;
     }
     int randomNote = random(0, 8);
     tone(68, melody[randomNote],noteDuration);
