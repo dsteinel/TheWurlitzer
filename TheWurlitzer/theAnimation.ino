@@ -7,9 +7,19 @@ void animation(){
     delay(pauseBetweenNotes);
     noTone(68);
   }
-  repeatMillis = millis();
   delay(500);
   resetAllLed();
+
+  noteToHit = (int)random(0,13);
+  Serial.println("NEXT NOTE TO HIT: " + noteToHit);
+  currentLevel++;
+
+  tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
+  delay(1000);
+  noTone(68);
+
+  displayNotesToFind(currentLevel);
+
 
   youHitIt = false;
 }

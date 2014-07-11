@@ -1,6 +1,6 @@
 int displayNotesToFind(int thisLevel){
   //tone(68, PLAY_THE_HIT_NOTE[noteToHit], 1000);
-  tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
+  // tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
 
   switch (thisLevel) {
   case 1:
