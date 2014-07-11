@@ -1,14 +1,23 @@
 
-void resetAllLed(){
-  for (int i = 0; i < 64; i++) {
-    digitalWrite(LED[i], LOW);
-  }
+void allLedOff(){
+  PORTA = B00000000;
+  PORTB = B00000000;
+  PORTC = B00000000;
+  PORTD = B00000000;
+  PORTE = B00000000;
+  PORTF = B00000000;
+  PORTG = B00000000;
+  PORTH = B00000000;
+  PORTJ = B00000000;
+  PORTL = B00000000;
+  //analog pins
+  PORTF = B00000000;
+  PORTK = B00000000;
 }
 
 void resetSingingLed(int resetLevel){
-  for (int i = 0; i < 64; i++) {
-    digitalWrite(LED[i], LOW);
-  }
+  allLedOff();
+  
   switch (resetLevel) {
   case 1:
     PORTB = B00000001;

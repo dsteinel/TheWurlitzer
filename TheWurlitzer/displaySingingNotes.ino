@@ -9,9 +9,18 @@ void displaySingingNotes() {
     resetFader--;
     if(resetFader <= 0){
       levelOneSinging = 0;
-      levelTwoSinging = 0; 
+      levelTwoSinging = 0;
+      int oneTimeCounter = 0;
+      if(oneTimeCounter == 1){
+        resetSingingLed(currentLevel);
+      }
     }
-    resetSingingLed(currentLevel);
+    noOneSings = true;
+    
+  }
+  if(frequency > 0){
+    noOneSings = false;
+    timedAction.reset();
   }
   /********* TOO LOW *********/
 

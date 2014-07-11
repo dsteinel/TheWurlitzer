@@ -1,4 +1,5 @@
 #include "notes.h"
+#include <TimedAction.h>
 
 /**************** FREQ COUNTER ****************/
 volatile unsigned long firstPulseTime;
@@ -49,6 +50,7 @@ const int noteDurations[] = {
 /**** OTHER VARS ****/
 boolean startGame = true;
 boolean disableFirstLevel = false;
+boolean noOneSings = true;
 const int resetFaderMaxValue = 10;
 
 int currentLevel = 0;
@@ -65,8 +67,11 @@ boolean readyForNext = true;
 
 int hitTollerance = 0;
 
+TimedAction timedAction = TimedAction(20000,playToneAgain);
+
 void setup()
 {
+  Serial.begin(9600);
   for (int i = 0; i < 65; i++) {
     pinMode(LED[i], OUTPUT);
     digitalWrite(LED[i], LOW);
@@ -80,15 +85,19 @@ void loop()
   if (startGame) 
   {
     noteToHit = random(0,13);
-    currentLevel = 4;
+    currentLevel = 1;
     tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
     delay(1000);
     noTone(68);
     startGame = false;
   }
+
+  if(noOneSings){
+    timedAction.check();
+    Serial.println("HERHEHR");
+  }
   displayNotesToFind(currentLevel);
 }
-
 
 void allLedOn(){
   // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
@@ -107,4 +116,9 @@ void allLedOn(){
   PORTK = B11111111;
 }
 
+void playToneAgain(){
+  tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
+  delay(1000);
+  noTone(68);
+}
 

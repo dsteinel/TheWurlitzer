@@ -3,10 +3,14 @@ void animation(){
   littleCounter = maxCounterValue;
   levelOneSinging = 0;
   levelTwoSinging = 0;
+  noOneSings = false;
 /*** =========== ***/
 
-  for (int thisNote = 0; thisNote < 11; thisNote++) {
+  for (int thisNote = 0; thisNote < 20; thisNote++) {
     int noteDuration = 1000/noteDurations[thisNote];
+    if(thisNote == 10){
+      noteDuration = 700;
+    }
     int randomNote = random(0, 8);
     tone(68, melody[randomNote],noteDuration);
     int pauseBetweenNotes = noteDuration * 1.30;
@@ -25,6 +29,7 @@ void animation(){
     PORTL = ledAnimation[pickPin];
 
     delay(pauseBetweenNotes);
+    
     noTone(68);
   }
  
