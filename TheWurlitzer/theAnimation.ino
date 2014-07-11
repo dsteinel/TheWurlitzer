@@ -1,7 +1,8 @@
 void animation(){
 /*** RESET STUFF ***/
   littleCounter = maxCounterValue;
-  singingLevel = 0;
+  levelOneSinging = 0;
+  levelTwoSinging = 0;
 /*** =========== ***/
 
   for (int thisNote = 0; thisNote < 8; thisNote++) {
@@ -31,6 +32,14 @@ void animation(){
   
   noteToHit = (int)random(0,13);
   currentLevel++;
+
+  if(currentLevel > 4){
+    disableFirstLevel = true;
+  }
+  if(currentLevel > 8){
+    currentLevel = 1;
+    disableFirstLevel = false;
+  }
 
   tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
   displayNotesToFind(currentLevel);

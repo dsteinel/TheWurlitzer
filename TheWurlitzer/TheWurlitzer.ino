@@ -29,18 +29,6 @@ const int PLAY_THE_HIT_NOTE[] = {
   NOTE_E5, NOTE_F5, NOTE_G5
 };
 
-/***** MELODY *****/
- const int melodyNotes[] = {
-   NOTE_B0, NOTE_C1, NOTE_CS1, NOTE_D1, NOTE_DS1, NOTE_E1, NOTE_F1, NOTE_FS1, 
-   NOTE_G1, NOTE_GS1, NOTE_A1, NOTE_AS1, NOTE_B1, NOTE_C2, NOTE_CS2, NOTE_D2,  
-   NOTE_DS2, NOTE_E2, NOTE_F2, NOTE_FS2, NOTE_G2, NOTE_GS2, NOTE_A2, NOTE_AS2, 
-   NOTE_B2, NOTE_C3, NOTE_CS3, NOTE_D3, NOTE_DS3, NOTE_E3, NOTE_F3, NOTE_FS3, 
-   NOTE_G3, NOTE_GS3, NOTE_A3, NOTE_AS3, NOTE_B3, NOTE_C4, NOTE_CS4, NOTE_D4,  
-   NOTE_DS4, NOTE_E4, NOTE_F4, NOTE_FS4, NOTE_G4, NOTE_GS4, NOTE_A4, NOTE_AS4, 
-   NOTE_B4, NOTE_C5, NOTE_CS5, NOTE_D5, NOTE_DS5, NOTE_E5, NOTE_F5, NOTE_FS5, 
-   NOTE_G5, NOTE_GS5, NOTE_A5, NOTE_AS5, NOTE_B5, NOTE_C6, NOTE_CS6, NOTE_D6
- };
-
 const int ledAnimation[] = {
   B10000001,B10000010,B10000100,B10001000,B10100000,B11000000,B11100000,B11010000,
   B11001000,B11000100,B11000010,B11000001,B11101000,B11100101,B11100001,B11100001,
@@ -48,7 +36,7 @@ const int ledAnimation[] = {
   B10000000,B10010000,B10000000,B10000000,B10110010,B10110011,B10010000,B11011011,
   B10011000,B10100100,B10000000,B10111001,B10001110,B10001110,B10100100,B10111010,
   B10000101,B10011011,B10111000,B10001110,B11001110,B10011010,B10010010,B11111111
- };
+};
 
 const int melody[] = {
   NOTE_G4, NOTE_G4,NOTE_G4, NOTE_E4, NOTE_B4,NOTE_G4, NOTE_E4, NOTE_B4, NOTE_G4
@@ -59,6 +47,8 @@ const int noteDurations[] = {
 
 /**** OTHER VARS ****/
 boolean startGame = true;
+boolean disableFirstLevel = false;
+const int resetFaderMaxValue = 10;
 
 int currentLevel = 0;
 int currentSingingNote = 0;
@@ -66,16 +56,17 @@ int noteToHit;
 
 int maxCounterValue = 10;
 int littleCounter = 0;
-int singingLevel = 0;
+int levelOneSinging = 0;
+int levelTwoSinging = 0;
 
 int resetFader = 0; 
-const int resetFaderMaxValue = 20;
+boolean readyForNext = true;
 
 int hitTollerance = 0;
 
 void setup()
 {
-   // Serial.begin(9600);
+  // Serial.begin(9600);
   for (int i = 0; i < 65; i++) {
     pinMode(LED[i], OUTPUT);
     digitalWrite(LED[i], LOW);
@@ -89,7 +80,7 @@ void loop()
   if (startGame) 
   {
     noteToHit = random(0,13);
-    currentLevel = 1;
+    currentLevel = 4;
     tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
     delay(1000);
     noTone(68);
@@ -115,4 +106,5 @@ void allLedOn(){
   PORTF = B11111111;
   PORTK = B11111111;
 }
+
 
