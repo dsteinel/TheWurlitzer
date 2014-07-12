@@ -1,28 +1,55 @@
 void animation(){
-  Serial.println("HELL YEAH");
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
+/*** RESET STUFF ***/
+  littleCounter = maxCounterValue;
+  levelOneSinging = 0;
+  levelTwoSinging = 0;
+  noOneSings = false;
+/*** =========== ***/
+
+  for (int thisNote = 0; thisNote < 20; thisNote++) {
     int noteDuration = 1000/noteDurations[thisNote];
-    tone(68, melody[thisNote],noteDuration);
+    if(thisNote == 10){
+      noteDuration = 700;
+    }
+    int randomNote = random(0, 8);
+    tone(68, melody[randomNote],noteDuration);
     int pauseBetweenNotes = noteDuration * 1.30;
+    int pickPin = random(0, 64);
+    
+    PORTA = ledAnimation[pickPin];
+    PORTB = ledAnimation[pickPin];
+    PORTC = ledAnimation[pickPin];
+    PORTD = ledAnimation[pickPin];
+    PORTE = ledAnimation[pickPin];
+    PORTF = ledAnimation[pickPin];
+    PORTG = ledAnimation[pickPin];
+    PORTH = ledAnimation[pickPin];
+    PORTJ = ledAnimation[pickPin];
+    PORTK = ledAnimation[pickPin];
+    PORTL = ledAnimation[pickPin];
+
     delay(pauseBetweenNotes);
+    
     noTone(68);
   }
-  repeatMillis = millis();
-  delay(500);
-  resetAllLed();
+ 
+  resetSingingLed(currentLevel);
+  delay(1500);
+  
+  noteToHit = (int)random(0,13);
+  currentLevel++;
 
-  youHitIt = false;
+  if(currentLevel > 4){
+    disableFirstLevel = true;
+  }
+  if(currentLevel > 8){
+    currentLevel = 1;
+    disableFirstLevel = false;
+  }
+
+  tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
+  displayNotesToFind(currentLevel);
+
+  delay(1000);
+  noTone(68);
 }
-
-void finishAnimation(){
-  tone(68, melodyNotes[5], 400);
-  delay(400);
-  tone(68, melodyNotes[50], 400);
-  delay(400);
-  tone(68, melodyNotes[40], 400);
-  delay(400);
-  tone(68, melodyNotes[20], 400);
-}
-
-
-

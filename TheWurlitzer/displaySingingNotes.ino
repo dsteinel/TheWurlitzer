@@ -1,241 +1,240 @@
 /****** if equal = youHitIt = true ********/
 
 void displaySingingNotes() {
-  int singingLevel = 0;
-  int maxFreqLoop = 5;
-  int averageFreq;
   int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   int frequency = readFrequency(timeToMeasure);
-<<<<<<< HEAD
-=======
-
->>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
-  Serial.println(frequency);
-
-  for(int i; i<maxFreqLoop; i++){
-   frequencyArray[i] = readFrequency(timeToMeasure);
-   int sumFrequencyValue += frequencyArray[i];
-   if(i == maxFreqLoop){
-    averageFreq = sumFrequencyValue/maxFreqLoop;
-  }
-}
-
-Serial.print("averageFreq: ");
-Serial.println(averageFreq);
 
 
-if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency < (FREQUENCY_TO_HIT[noteToHit] + 150))
-{
-  youHitIt = false;
-}
-
-/********* TOO LOW *********/
-
-if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) && frequency < (FREQUENCY_TO_HIT[noteToHit] - 100))
-{
-  singingLevel = 1;
-} 
-
-if (frequency > (FREQUENCY_TO_HIT[noteToHit]) - 100 && frequency < (FREQUENCY_TO_HIT[noteToHit] - 50))
-{
-  singingLevel = 2;
-}
-
-if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 50) && frequency < (FREQUENCY_TO_HIT[noteToHit] - hitTollerance))
-{
-  singingLevel = 3;
-}
-
-/********* TOO HIGH *********/
-
-if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 150) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 100))
-{
-  singingLevel = 4;
-}
-
-if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 100) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 50))
-{
-  singingLevel = 5;
-}
-
-if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 50) && frequency > (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
-{
-  singingLevel = 6;
-}
-
-if(frequency < (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency > (FREQUENCY_TO_HIT[noteToHit] + 150))
-{
-  resetSingingLed(currentLevel);
-}
-
-singingLEDLevel(singingLevel);
-
-/********* IF HIT *********/
-
-if(frequency >= (FREQUENCY_TO_HIT[noteToHit] - hitTollerance) && 
-  frequency < (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
-{
-  /********** DO SOME FANCY STUFF **********/
-  for (int i = 0; i < 65; ++i) {
-    digitalWrite(LED[i], HIGH);
-  }
-  /* ================================= */
-  Serial.print("currentMillis");
-  Serial.println(millis());
-  Serial.print("previous");
-  Serial.println(millis());
-
-  if ((millis() - repeatMillis) > timetoHoldFreq)
-  {
-    repeatMillis = millis();
-
-    Serial.println("HIT!");
-    animation();
-
-    resetSingingLed(currentLevel);
-
-    noteToHit = (int)random(0,13);
-    Serial.println("NEXT NOTE TO HIT: " + noteToHit);
-    currentLevel++;
-
-    delay(2000);
-
-    displayNotesToFind(currentLevel);
-
-    if(currentLevel > 4){
-      currentLevel = 1;
-        //finishAnimation();
+  if(frequency == 0){
+    resetFader--;
+    if(resetFader <= 0){
+      levelOneSinging = 0;
+      levelTwoSinging = 0;
+      int oneTimeCounter = 0;
+      if(oneTimeCounter == 1){
+        resetSingingLed(currentLevel);
       }
     }
-    //return currentSingingNote;
+    noOneSings = true;
+    
+  }
+  if(frequency > 0){
+    noOneSings = false;
+    timedAction.reset();
+  }
+  /********* TOO LOW *********/
+
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) && frequency < (FREQUENCY_TO_HIT[noteToHit] - 100))
+  {
+    levelOneSinging = 1;
+    levelTwoSinging = 1;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
+  } 
+
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit]) - 100 && frequency < (FREQUENCY_TO_HIT[noteToHit] - 50))
+  {
+    levelOneSinging = 2;
+    levelTwoSinging = 2;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
   }
 
-  else
-  repeatMillis = millis();
+  if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 50) && frequency < (FREQUENCY_TO_HIT[noteToHit] - hitTollerance))
+  {
+    levelOneSinging = 3;
+    levelTwoSinging = 3;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
+  }
+
+  /********* TOO HIGH *********/
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 150) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 100))
+  {
+    levelOneSinging = 4;
+    levelTwoSinging = 1;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
+  }
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 100) && frequency > (FREQUENCY_TO_HIT[noteToHit] + 50))
+  {
+    levelOneSinging = 5;
+    levelTwoSinging = 2;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
+  }
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] + 50) && frequency > (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
+  {
+    levelOneSinging = 6;
+    levelTwoSinging = 3;
+    littleCounter = maxCounterValue;
+    resetFader = resetFaderMaxValue;
+  }
+
+  if(frequency < (FREQUENCY_TO_HIT[noteToHit] - 150) || frequency > (FREQUENCY_TO_HIT[noteToHit] + 150))
+  {
+    resetSingingLed(currentLevel);
+    littleCounter = maxCounterValue;
+  }
+
+  /********* IF HIT *********/
+  if(frequency >= (FREQUENCY_TO_HIT[noteToHit] - hitTollerance) && 
+    frequency < (FREQUENCY_TO_HIT[noteToHit] + hitTollerance))
+  {
+    littleCounter--;
+    if(littleCounter == 0){
+      allLedOn();
+      levelOneSinging = 7; 
+      levelTwoSinging = 4;   
+    }    
+  }
+  singingLEDLevel(levelOneSinging);
 }
 
 void singingLEDLevel(int tooHighTooLow){
-  resetSingingLed(currentLevel);
-
   /********* TOO LOW *********/
-  switch (tooHighTooLow) {
-    // case 0:
-    // break;
-    case 1:
-    /**** FIRST ROW ****/
-    PORTK = B10000000; // P69
-    PORTB = B00011000; // P10 && P50
-    PORTD = B00001000; // P18
-    PORTA = B00010000; // P26
-    PORTC = B00001000; // P34
-    PORTL = B10000000; // P42
-    PORTF = B00010000; // P58
-    break;
+  if(!disableFirstLevel){
+    switch (tooHighTooLow) {
+      case 0:
+      //resetSingingLed(currentLevel);
+      break;
 
-    case 2:
-    /**** FIRST ROW ****/
-    PORTK = B10000000; // P69
-    PORTB = B00011000; // P10 && P50
-    PORTD = B00001000; // P18
-    PORTA = B00010000; // P26
-    PORTC = B00001000; // P34
-    PORTL = B10000000; // P42
-    PORTF = B00010000; // P58
+      case 1:
+      /**** FIRST ROW ****/
+      PORTK = B11000000; // P69
+      PORTB = B00011000; // P10 && P50
+      PORTD = B00001000; // P18
+      PORTA = B00010000; // P26
+      PORTC = B00001000; // P34
+      PORTL = B10000000; // P42
+      PORTF = B00010000; // P58
+      break;
 
+      case 2:
+      /**** FIRST ROW ****/ /**** SECOND ****/ /**** THIRD ****/
+      PORTK = B11000000; // P69             
+      PORTB = B00111100; // P10 && P50      || P11 && 51        ||
+      PORTD = B00001100; // P18             || P19
+      PORTA = B00110000; // P26             || P27
+      PORTC = B00001100; // P34             || P34
+      PORTL = B11000000; // P42             || P43
+      PORTF = B00110000; // P58             || P59
+      PORTE = B00100000; // P3 
+      break;
 
-    /**** SECOND ROW ****/
-    PORTE = B00100000; // P3
-    PORTB = B00100100; // P11 && 51
-    PORTD = B00000100; // P19
-    PORTA = B00100000; // P27
-    PORTC = B00000100; // P35
-    PORTL = B01000000; // P43
-    PORTF = B00100000; // P59
+      case 3:
 
-    break;
-
-    case 3:
-    /**** FIRST ROW ****/
-    PORTK = B10000000; // P69
-    PORTB = B00011000; // P10 && P50
-    PORTD = B00001000; // P18
-    PORTA = B00010000; // P26
-    PORTC = B00001000; // P34
-    PORTL = B10000000; // P42
-    PORTF = B00010000; // P58
+      /**** FIRST ROW ****/ /**** SECOND ****/ /**** THIRD ****/
+      PORTK = B11000000; // P69             || P66
+      PORTB = B01111110; // P10 && P50      || P11 && 51        || P12 && 52
+      PORTD = B00001110; // P18             || P19              || P20
+      PORTA = B01110000; // P26             || P27              || P28
+      PORTC = B00001110; // P34             || P35              || P36
+      PORTL = B11100000; // P42             || P43              || P44
+      PORTF = B01110000; // P58             || P59              || P60
+      PORTE = B00100000; // P3 
+      PORTG = B00100000; //                 ||                  || P4
+      break;
 
 
-    /**** SECOND ROW ****/
-    PORTE = B00100000; // P3
-    PORTB = B00100100; // P11 && 51
-    PORTD = B00000100; // P19
-    PORTA = B00100000; // P27
-    PORTC = B00000100; // P35
-    PORTL = B01000000; // P43
-    PORTF = B00100000; // P59
+      /********* TOO HIGH *********/
+      case 4:
+      
+      /**** EIGHT ROW ****/ /**** SEVENTH ****/ /**** SIXTH ****/
+      PORTH = B01000001; // P9 && P17
+      PORTA = B00001000; // P25
+      PORTC = B00010000; // P33
+      PORTG = B00000001; // P41
+      PORTL = B00000001; // P49
+      PORTF = B00001000; // P57
+      PORTK = B00001000; // P65
+      break;
 
-    /**** THIRD ROW ****/
-    PORTG = B00100000; // P4
-    PORTB = B01000010; // P12 && 52
-    PORTD = B00000010; // P20
-    PORTA = B01000000; // P28
-    PORTC = B00000010; // P36
-    PORTL = B00100000; // P44
-    PORTF = B01000000; // P60
+      case 5:
+      /**** EIGHTH ROW ****/
+      PORTH = B01100011; // P9 && P17
+      PORTA = B00001100; // P25
+      PORTC = B00110000; // P33
+      PORTG = B00000011; // P41
+      PORTL = B00000011; // P49
+      PORTF = B00001100; // P57
+      PORTK = B00001100; // P65
+      break;
 
-    break;
+      case 6:
+      /**** SIXTH  ROW ****/
+      PORTH = B01110011; // P9 && P17
+      PORTJ = B00000001; // P9 && P17
+      PORTA = B00001110; // P25
+      PORTC = B01110000; // P33
+      PORTG = B00000111; // P41
+      PORTL = B00000111; // P49
+      PORTF = B00001110; // P57
+      PORTK = B00001110; // P65
+      break;
 
-
-    /********* TOO HIGH *********/
-    case 4:
-    
-    /**** EIGHTH ROW ****/
-    PORTH = B01000001; // P9 && P17
-    PORTA = B00001000; // P25
-    PORTC = B00010000; // P33
-    PORTG = B00000001; // P41
-    PORTL = B00000001; // P49
-    PORTF = B00001000; // P57
-    PORTK = B00001000; // P65
-    break;
-
-    case 5:
-    /**** EIGHTH ROW ****/
-    PORTH = B01000001; // P9 && P17
-    PORTA = B00001000; // P25
-    PORTC = B00010000; // P33
-    PORTG = B00000001; // P41
-    PORTL = B00000001; // P49
-    PORTF = B00001000; // P57
-    PORTK = B00001000; // P65
-
-    /**** SEVENTH  ROW ****/
-    PORTH = B00100010; // P8 && P16
-    PORTA = B00000100; // P24
-    PORTC = B00100000; // P32
-    PORTG = B00000010; // P40
-    PORTL = B00000010; // P48
-    PORTF = B00000100; // P56
-    PORTK = B00000100; // P64
-
-    case 6:
-    /**** SIXTH  ROW ****/
-    PORTH = B00010000; // P7
-    PORTJ = B00000010; // P15
-    PORTA = B00000010; // P23
-    PORTC = B01000000; // P31
-    PORTK = B00010010; // P66 && P63
-    PORTL = B00000100; // P47
-    PORTF = B00000010; // P55
-    break;
-
-    default:
-    for(int i=0; i<65; i++){
-        digitalWrite(LED[i], LOW);
+      case 7:
+      animation();
+      break;  
     }
   }
+  else if(disableFirstLevel){
+    tooHighTooLow = 3;
+    switch (levelTwoSinging) {
+      case 0:
+      resetSingingLed(currentLevel);
+      break;
+
+      case 1:
+      /**** FIRST ROW ****/
+      PORTH = B01111001;
+      PORTE = B00101000;
+      PORTG = B00100001;
+      PORTK = B11001111;
+      PORTA = B00011000;
+      PORTC = B00011000;
+      PORTL = B10000001;
+      PORTF = B11111000;
+      PORTB = B00011000;
+      PORTD = B00001000;
+      break;
+
+      case 2:
+      /**** FIRST ROW ****/ /**** SECOND ****/ /**** THIRD ****/
+      PORTH = B00000010;
+      PORTJ = B00000011;
+      PORTE = B00000000;
+      PORTG = B00000010;
+      PORTK = B00000000;
+      PORTA = B00100100;
+      PORTC = B00100100;
+      PORTL = B01000010;
+      PORTF = B00000111;
+      PORTB = B11100111;
+      PORTD = B00000100;      
+      break;
+
+      case 3:
+      allLedOn();
+      PORTH = B00000000;
+      PORTJ = B00000000;
+      PORTE = B00000000;
+      PORTG = B00000100;
+      PORTK = B00000000;
+      PORTA = B01000011;
+      PORTC = B01000010;
+      PORTL = B00111100;
+      PORTF = B00000000;
+      PORTB = B00000000;
+      PORTD = B00000011;
+      break;
+
+      case 4:
+      animation();
+      break; 
+  }
+  }
 }
-
-
-
-
