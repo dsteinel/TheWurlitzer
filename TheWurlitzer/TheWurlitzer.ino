@@ -59,11 +59,7 @@ int currentLevel = 0;
 int currentSingingNote = 0;
 int previouscurrentSingingNote = 0;
 int noteToHit;
-<<<<<<< HEAD
 // int frequency;
-
-=======
->>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 
 int currentMillis = 0;
 int repeatMillis = 0;
@@ -93,12 +89,9 @@ void loop()
 {
   /* TEST LEDS */
    
-<<<<<<< HEAD
   // frequency = readFrequency(timeToMeasure);
   // Serial.println(frequency);
-=======
   //allLedOn();
->>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 
   unsigned long currentMillis = millis();
 
@@ -123,13 +116,10 @@ void loop()
 }
 
 
-<<<<<<< HEAD
 void showAllLED(){
 	// digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
-=======
 void allLedOn(){
   // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
->>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
   PORTA = B11111111;
   PORTB = B11111111;
   PORTC = B11111111;
@@ -141,13 +131,10 @@ void allLedOn(){
   PORTJ = B11111111;
   PORTL = B11111111;
   //analog pins
-<<<<<<< HEAD
   PORTF = B11111111;
   PORTK = B11111111;
 }
 
-=======
   PORTK = B10111111;
 }
->>>>>>> 8fdf2bb06ea7f44bde81846be9464d8bf6ac9fbf
 
