@@ -33,7 +33,7 @@ void animation(){
     noTone(68);
   }
  
-  resetSingingLed(currentLevel);
+  
   delay(1500);
   
   noteToHit = (int)random(0,13);

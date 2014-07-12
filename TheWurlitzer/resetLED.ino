@@ -1,5 +1,10 @@
 
+<<<<<<< HEAD
 void allLedOff(){
+=======
+void resetAllLed(){
+  // digital pins - PORTE = 0,1 & 4 sind PIN 2,1,0
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
   PORTA = B00000000;
   PORTB = B00000000;
   PORTC = B00000000;
@@ -16,8 +21,11 @@ void allLedOff(){
 }
 
 void resetSingingLed(int resetLevel){
+<<<<<<< HEAD
   allLedOff();
   
+=======
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
   switch (resetLevel) {
   case 1:
     PORTB = B00000001;

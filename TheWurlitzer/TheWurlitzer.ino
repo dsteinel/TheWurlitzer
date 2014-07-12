@@ -1,11 +1,16 @@
 #include "notes.h"
+<<<<<<< HEAD
 #include <TimedAction.h>
+=======
+//#include <Time.h>
+//#include <TimeAlarms.h>
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
 
 /**************** FREQ COUNTER ****************/
 volatile unsigned long firstPulseTime;
 volatile unsigned long lastPulseTime;
 volatile unsigned long numPulses;
-unsigned int timeToMeasure = 50;
+unsigned int timeToMeasure = 70;
 /* ================================= */
 
 /**** ARDUINO STUFF ****/
@@ -47,6 +52,8 @@ const int noteDurations[] = {
   4, 8, 8, 4, 4 , 8 , 8 , 4, 4, 8, 8, 4, 4 , 8 , 8 , 4 
 };
 
+const int resetFaderMaxValue = 20;
+
 /**** OTHER VARS ****/
 boolean startGame = true;
 boolean disableFirstLevel = false;
@@ -56,6 +63,7 @@ const int resetFaderMaxValue = 10;
 int currentLevel = 0;
 int currentSingingNote = 0;
 int noteToHit;
+<<<<<<< HEAD
 <<<<<<< HEAD
 // int frequency;
 
@@ -75,6 +83,12 @@ int resetFader = 0;
 boolean readyForNext = true;
 >>>>>>> c6afb0a284fde7322c0642a9acac161e65bbc91b
 
+=======
+int maxCounterValue = 10;
+int littleCounter = 0;
+int singingLevel = 0;
+int resetFader = 0; 
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
 int hitTollerance = 0;
 
 TimedAction timedAction = TimedAction(20000,playToneAgain);
@@ -102,7 +116,13 @@ void loop()
 
 =======
   displaySingingNotes();
+<<<<<<< HEAD
 >>>>>>> c6afb0a284fde7322c0642a9acac161e65bbc91b
+=======
+  
+  //Alarm.timerRepeat(5, playToneAgain);
+  
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
   if (startGame) 
   {
     noteToHit = random(0,13);
@@ -143,6 +163,7 @@ void allLedOn(){
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   PORTK = B10111111;
 =======
 void playToneAgain(){
@@ -152,3 +173,10 @@ void playToneAgain(){
 >>>>>>> c6afb0a284fde7322c0642a9acac161e65bbc91b
 }
 
+=======
+void playToneAgain(){
+ tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
+ delay(1000); 
+ noTone(68);
+}
+>>>>>>> 3eeb4e65c3ddf83ec83923cd6813e636730d12c3
