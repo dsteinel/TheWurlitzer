@@ -1,5 +1,5 @@
 
 ##THE WURLITZER
-a creative physics project.
+you can see the current state of the project here: www.dsteinel.com/theWurlitzer
 
-It consist of a 8x8 LED matrix.
+it is a sound controlled LED-matrix which consists of 64 LEDs. You can control all the LEDs with your voice through a self-build microphone.
