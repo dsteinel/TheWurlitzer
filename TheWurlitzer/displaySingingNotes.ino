@@ -4,24 +4,23 @@ void displaySingingNotes() {
   int hitTollerance = FREQUENCY_TO_HIT[noteToHit]*7/100;
   int frequency = readFrequency(timeToMeasure);
 
-
   if(frequency == 0){
     resetFader--;
     if(resetFader <= 0){
+      resetFader = 0;
       levelOneSinging = 0;
       levelTwoSinging = 0;
-      int oneTimeCounter = 0;
-      if(oneTimeCounter == 1){
-        resetSingingLed(currentLevel);
-      }
+      resetSingingLed(currentLevel);
     }
+
     noOneSings = true;
-    
   }
+
   if(frequency > 0){
     noOneSings = false;
     timedAction.reset();
   }
+
   /********* TOO LOW *********/
 
   if (frequency > (FREQUENCY_TO_HIT[noteToHit] - 150) && frequency < (FREQUENCY_TO_HIT[noteToHit] - 100))
@@ -91,13 +90,12 @@ void displaySingingNotes() {
       levelTwoSinging = 4;   
     }    
   }
-  singingLEDLevel(levelOneSinging);
 }
 
-void singingLEDLevel(int tooHighTooLow){
+void singingLEDLevel(){
   /********* TOO LOW *********/
   if(!disableFirstLevel){
-    switch (tooHighTooLow) {
+    switch (levelOneSinging) {
       case 0:
       //resetSingingLed(currentLevel);
       break;

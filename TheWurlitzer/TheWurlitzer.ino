@@ -52,6 +52,7 @@ const int noteDurations[] = {
 boolean startGame = true;
 boolean disableFirstLevel = false;
 boolean noOneSings = true;
+
 const int resetFaderMaxValue = 10;
 
 int currentLevel = 0;
@@ -62,42 +63,43 @@ int maxCounterValue = 10;
 int littleCounter = 0;
 int levelOneSinging = 0;
 int levelTwoSinging = 0;
-
 int resetFader = 0; 
-boolean readyForNext = true;
-
 int hitTollerance = 0;
 
-TimedAction timedAction = TimedAction(20000,playToneAgain);
+TimedAction timedAction = TimedAction(10000, playToneAgain);
 
 void setup()
 {
   Serial.begin(9600);
+  randomSeed(analogRead(13));
+
   for (int i = 0; i < 65; i++) {
     pinMode(LED[i], OUTPUT);
     digitalWrite(LED[i], LOW);
   }
-  randomSeed(analogRead(13));
 }
 
 void loop()
 {
   displaySingingNotes();
+  singingLEDLevel();
+
+  if(noOneSings){
+    timedAction.check();
+  }
+  
   if (startGame) 
   {
-    noteToHit = random(0,13);
     currentLevel = 1;
+    noteToHit = random(0,13);
     tone(68, FREQUENCY_TO_HIT[noteToHit], 1000);
     delay(1000);
     noTone(68);
     startGame = false;
   }
 
-  if(noOneSings){
-    timedAction.check();
-    Serial.println("HERHEHR");
-  }
   displayNotesToFind(currentLevel);
+  
 }
 
 void allLedOn(){
